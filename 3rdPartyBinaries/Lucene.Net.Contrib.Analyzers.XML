@@ -1,0 +1,2909 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Lucene.Net.Contrib.Analyzers</name>
+    </assembly>
+    <members>
+        <member name="T:Lucene.Net.Analysis.AR.ArabicAnalyzer">
+            <see cref="T:Lucene.Net.Analysis.Analyzer"/> for Arabic. 
+            <p/>
+            This analyzer implements light-stemming as specified by:
+            <i>
+            Light Stemming for Arabic Information Retrieval
+            </i>    
+            http://www.mtholyoke.edu/~lballest/Pubs/arab_stem05.pdf
+            <p/>
+            The analysis package contains three primary components:
+            <ul>
+             <li><see cref="T:Lucene.Net.Analysis.AR.ArabicNormalizationFilter"/>: Arabic orthographic normalization.</li>
+             <li><see cref="T:Lucene.Net.Analysis.AR.ArabicStemFilter"/>: Arabic light stemming</li>
+             <li>Arabic stop words file: a set of default Arabic stop words.</li>
+            </ul>
+            
+        </member>
+        <member name="F:Lucene.Net.Analysis.AR.ArabicAnalyzer.DEFAULT_STOPWORD_FILE">
+            File containing default Arabic stopwords.
+            
+            Default stopword list is from http://members.unine.ch/jacques.savoy/clef/index.html
+            The stopword list is BSD-Licensed.
+        </member>
+        <member name="F:Lucene.Net.Analysis.AR.ArabicAnalyzer.stoptable">
+            Contains the stopwords used with the StopFilter.
+        </member>
+        <member name="F:Lucene.Net.Analysis.AR.ArabicAnalyzer.STOPWORDS_COMMENT">
+            <summary>
+            The comment character in the stopwords file.  All lines prefixed with this will be ignored  
+            </summary>
+        </member>
+        <member name="M:Lucene.Net.Analysis.AR.ArabicAnalyzer.GetDefaultStopSet">
+            <summary>
+            Returns an unmodifiable instance of the default stop-words set
+            </summary>
+            <returns>Returns an unmodifiable instance of the default stop-words set</returns>
+        </member>
+        <member name="M:Lucene.Net.Analysis.AR.ArabicAnalyzer.#ctor(Lucene.Net.Util.Version)">
+            Builds an analyzer with the default stop words: <see cref="F:Lucene.Net.Analysis.AR.ArabicAnalyzer.DEFAULT_STOPWORD_FILE"/>.
+        </member>
+        <member name="M:Lucene.Net.Analysis.AR.ArabicAnalyzer.#ctor(Lucene.Net.Util.Version,System.Collections.Generic.ISet{System.String})">
+            <summary>
+            Builds an analyzer with the given stop words.
+            </summary>
+            <param name="matchVersion">Lucene compatibility version</param>
+            <param name="stopwords">a stopword set</param>
+        </member>
+        <member name="M:Lucene.Net.Analysis.AR.ArabicAnalyzer.#ctor(Lucene.Net.Util.Version,System.String[])">
+            Builds an analyzer with the given stop words.
+        </member>
+        <member name="M:Lucene.Net.Analysis.AR.ArabicAnalyzer.#ctor(Lucene.Net.Util.Version,System.Collections.Generic.IDictionary{System.String,System.String})">
+            Builds an analyzer with the given stop words.
+        </member>
+        <member name="M:Lucene.Net.Analysis.AR.ArabicAnalyzer.#ctor(Lucene.Net.Util.Version,System.IO.FileInfo)">
+            Builds an analyzer with the given stop words.  Lines can be commented out using <see cref="F:Lucene.Net.Analysis.AR.ArabicAnalyzer.STOPWORDS_COMMENT"/>
+        </member>
+        <member name="M:Lucene.Net.Analysis.AR.ArabicAnalyzer.TokenStream(System.String,System.IO.TextReader)">
+             Creates a <see cref="M:Lucene.Net.Analysis.AR.ArabicAnalyzer.TokenStream(System.String,System.IO.TextReader)"/> which tokenizes all the text in the provided <see cref="T:System.IO.TextReader"/>.
+            
+             <returns>A <see cref="M:Lucene.Net.Analysis.AR.ArabicAnalyzer.TokenStream(System.String,System.IO.TextReader)"/> built from an <see cref="T:Lucene.Net.Analysis.AR.ArabicLetterTokenizer"/> filtered with
+             			<see cref="T:Lucene.Net.Analysis.LowerCaseFilter"/>, <see cref="T:Lucene.Net.Analysis.StopFilter"/>, <see cref="T:Lucene.Net.Analysis.AR.ArabicNormalizationFilter"/>
+                        and <see cref="T:Lucene.Net.Analysis.AR.ArabicStemFilter"/>.</returns>
+        </member>
+        <member name="M:Lucene.Net.Analysis.AR.ArabicAnalyzer.ReusableTokenStream(System.String,System.IO.TextReader)">
+             Returns a (possibly reused) <see cref="M:Lucene.Net.Analysis.AR.ArabicAnalyzer.TokenStream(System.String,System.IO.TextReader)"/> which tokenizes all the text 
+             in the provided <see cref="T:System.IO.TextReader"/>.
+            
+             <returns>A <see cref="M:Lucene.Net.Analysis.AR.ArabicAnalyzer.TokenStream(System.String,System.IO.TextReader)"/> built from an <see cref="T:Lucene.Net.Analysis.AR.ArabicLetterTokenizer"/> filtered with
+                        <see cref="T:Lucene.Net.Analysis.LowerCaseFilter"/>, <see cref="T:Lucene.Net.Analysis.StopFilter"/>, <see cref="T:Lucene.Net.Analysis.AR.ArabicNormalizationFilter"/>
+                        and <see cref="T:Lucene.Net.Analysis.AR.ArabicStemFilter"/>.</returns>
+        </member>
+        <member name="T:Lucene.Net.Analysis.AR.ArabicLetterTokenizer">
+             Tokenizer that breaks text into runs of letters and diacritics.
+             <p>
+             The problem with the standard Letter tokenizer is that it fails on diacritics.
+             Handling similar to this is necessary for Indic Scripts, Hebrew, Thaana, etc.
+             </p>
+            
+        </member>
+        <member name="M:Lucene.Net.Analysis.AR.ArabicLetterTokenizer.IsTokenChar(System.Char)">
+            Allows for Letter category or NonspacingMark category
+            <see cref="M:Lucene.Net.Analysis.LetterTokenizer.IsTokenChar(System.Char)"/>
+        </member>
+        <member name="T:Lucene.Net.Analysis.AR.ArabicNormalizationFilter">
+            A <see cref="T:Lucene.Net.Analysis.TokenFilter"/> that applies <see cref="T:Lucene.Net.Analysis.AR.ArabicNormalizer"/> to normalize the orthography.
+            
+        </member>
+        <member name="T:Lucene.Net.Analysis.AR.ArabicNormalizer">
+              Normalizer for Arabic.
+              <p/>
+              Normalization is done in-place for efficiency, operating on a termbuffer.
+              <p/>
+              Normalization is defined as:
+              <ul>
+              <li> Normalization of hamza with alef seat to a bare alef.</li>
+              <li> Normalization of teh marbuta to heh</li>
+              <li> Normalization of dotless yeh (alef maksura) to yeh.</li>
+              <li> Removal of Arabic diacritics (the harakat)</li>
+              <li> Removal of tatweel (stretching character).</li>
+             </ul>
+            
+        </member>
+        <member name="M:Lucene.Net.Analysis.AR.ArabicNormalizer.Normalize(System.Char[],System.Int32)">
+            Normalize an input buffer of Arabic text
+            
+            <param name="s">input buffer</param>
+            <param name="len">length of input buffer</param>
+            <returns>length of input buffer after normalization</returns>
+        </member>
+        <member name="M:Lucene.Net.Analysis.AR.ArabicNormalizer.Delete(System.Char[],System.Int32,System.Int32)">
+            Delete a character in-place
+            
+            <param name="s">Input Buffer</param>
+            <param name="pos">Position of character to delete</param>
+            <param name="len">length of input buffer</param>
+            <returns>length of input buffer after deletion</returns>
+        </member>
+        <member name="T:Lucene.Net.Analysis.AR.ArabicStemFilter">
+            A <see cref="T:Lucene.Net.Analysis.TokenFilter"/> that applies <see cref="T:Lucene.Net.Analysis.AR.ArabicStemmer"/> to stem Arabic words..
+            
+        </member>
+        <member name="T:Lucene.Net.Analysis.AR.ArabicStemmer">
+              Stemmer for Arabic.
+              <p/>
+              Stemming  is done in-place for efficiency, operating on a termbuffer.
+              <p/>
+              Stemming is defined as:
+              <ul>
+              <li> Removal of attached definite article, conjunction, and prepositions.</li>
+              <li> Stemming of common suffixes.</li>
+             </ul>
+            
+        </member>
+        <member name="M:Lucene.Net.Analysis.AR.ArabicStemmer.Stem(System.Char[],System.Int32)">
+            Stem an input buffer of Arabic text.
+            
+            <param name="s">input buffer</param>
+            <param name="len">length of input buffer</param>
+            <returns>length of input buffer after normalization</returns>
+        </member>
+        <member name="M:Lucene.Net.Analysis.AR.ArabicStemmer.StemPrefix(System.Char[],System.Int32)">
+            Stem a prefix off an Arabic word.
+            <param name="s">input buffer</param>
+            <param name="len">length of input buffer</param>
+            <returns>new length of input buffer after stemming.</returns>
+        </member>
+        <member name="M:Lucene.Net.Analysis.AR.ArabicStemmer.StemSuffix(System.Char[],System.Int32)">
+            Stem suffix(es) off an Arabic word.
+            <param name="s">input buffer</param>
+            <param name="len">length of input buffer</param>
+            <returns>new length of input buffer after stemming</returns>
+        </member>
+        <member name="M:Lucene.Net.Analysis.AR.ArabicStemmer.StartsWith(System.Char[],System.Int32,System.Char[])">
+            Returns true if the prefix matches and can be stemmed
+            <param name="s">input buffer</param>
+            <param name="len">length of input buffer</param>
+            <param name="prefix">prefix to check</param>
+            <returns>true if the prefix matches and can be stemmed</returns>
+        </member>
+        <member name="M:Lucene.Net.Analysis.AR.ArabicStemmer.EndsWith(System.Char[],System.Int32,System.Char[])">
+            Returns true if the suffix matches and can be stemmed
+            <param name="s">input buffer</param>
+            <param name="len">length of input buffer</param>
+            <param name="suffix">suffix to check</param>
+            <returns>true if the suffix matches and can be stemmed</returns>
+        </member>
+        <member name="M:Lucene.Net.Analysis.AR.ArabicStemmer.DeleteN(System.Char[],System.Int32,System.Int32,System.Int32)">
+            Delete n characters in-place
+            
+            <param name="s">Input Buffer</param>
+            <param name="pos">Position of character to delete</param>
+            <param name="len">Length of input buffer</param>
+            <param name="nChars">number of characters to delete</param>
+            <returns>length of input buffer after deletion</returns>
+        </member>
+        <member name="M:Lucene.Net.Analysis.AR.ArabicStemmer.Delete(System.Char[],System.Int32,System.Int32)">
+            Delete a character in-place
+            
+            <param name="s">Input Buffer</param>
+            <param name="pos">Position of character to delete</param>
+            <param name="len">length of input buffer</param>
+            <returns>length of input buffer after deletion</returns>
+        </member>
+        <member name="F:Lucene.Net.Analysis.BR.BrazilianAnalyzer.BRAZILIAN_STOP_WORDS">
+            List of typical Brazilian stopwords.
+        </member>
+        <member name="M:Lucene.Net.Analysis.BR.BrazilianAnalyzer.GetDefaultStopSet">
+            <summary>
+            Returns an unmodifiable instance of the default stop-words set.
+            </summary>
+            <returns>Returns an unmodifiable instance of the default stop-words set.</returns>
+        </member>
+        <member name="F:Lucene.Net.Analysis.BR.BrazilianAnalyzer.stoptable">
+            <summary>
+            Contains the stopwords used with the StopFilter.
+            </summary>
+        </member>
+        <!-- Badly formed XML comment ignored for member "F:Lucene.Net.Analysis.BR.BrazilianAnalyzer.excltable" -->
+        <member name="M:Lucene.Net.Analysis.BR.BrazilianAnalyzer.#ctor(Lucene.Net.Util.Version,System.Collections.Generic.ISet{System.String})">
+            Builds an analyzer with the given stop words
+            
+            @param matchVersion
+                     lucene compatibility version
+            @param stopwords
+                     a stopword set
+        </member>
+        <member name="M:Lucene.Net.Analysis.BR.BrazilianAnalyzer.#ctor(Lucene.Net.Util.Version,System.Collections.Generic.ISet{System.String},System.Collections.Generic.ISet{System.String})">
+            Builds an analyzer with the given stop words and stemming exclusion words
+            
+            @param matchVersion
+                     lucene compatibility version
+            @param stopwords
+                     a stopword set
+        </member>
+        <member name="M:Lucene.Net.Analysis.BR.BrazilianAnalyzer.#ctor(Lucene.Net.Util.Version,System.String[])">
+            Builds an analyzer with the given stop words.
+            @deprecated use {@link #BrazilianAnalyzer(Version, Set)} instead
+        </member>
+        <member name="M:Lucene.Net.Analysis.BR.BrazilianAnalyzer.#ctor(Lucene.Net.Util.Version,System.Collections.Generic.IDictionary{System.String,System.String})">
+            Builds an analyzer with the given stop words. 
+            @deprecated use {@link #BrazilianAnalyzer(Version, Set)} instead
+        </member>
+        <member name="M:Lucene.Net.Analysis.BR.BrazilianAnalyzer.#ctor(Lucene.Net.Util.Version,System.IO.FileInfo)">
+            Builds an analyzer with the given stop words.
+            @deprecated use {@link #BrazilianAnalyzer(Version, Set)} instead
+        </member>
+        <member name="M:Lucene.Net.Analysis.BR.BrazilianAnalyzer.SetStemExclusionTable(System.String[])">
+            Builds an exclusionlist from an array of Strings.
+            @deprecated use {@link #BrazilianAnalyzer(Version, Set, Set)} instead
+        </member>
+        <member name="M:Lucene.Net.Analysis.BR.BrazilianAnalyzer.SetStemExclusionTable(System.Collections.Generic.IDictionary{System.String,System.String})">
+            Builds an exclusionlist from a {@link Map}.
+            @deprecated use {@link #BrazilianAnalyzer(Version, Set, Set)} instead
+        </member>
+        <member name="M:Lucene.Net.Analysis.BR.BrazilianAnalyzer.SetStemExclusionTable(System.IO.FileInfo)">
+            Builds an exclusionlist from the words contained in the given file.
+            @deprecated use {@link #BrazilianAnalyzer(Version, Set, Set)} instead
+        </member>
+        <member name="M:Lucene.Net.Analysis.BR.BrazilianAnalyzer.TokenStream(System.String,System.IO.TextReader)">
+             Creates a {@link TokenStream} which tokenizes all the text in the provided {@link Reader}.
+            
+             @return  A {@link TokenStream} built from a {@link StandardTokenizer} filtered with
+             			{@link LowerCaseFilter}, {@link StandardFilter}, {@link StopFilter}, and 
+                      {@link BrazilianStemFilter}.
+        </member>
+        <member name="M:Lucene.Net.Analysis.BR.BrazilianAnalyzer.ReusableTokenStream(System.String,System.IO.TextReader)">
+             Returns a (possibly reused) {@link TokenStream} which tokenizes all the text 
+             in the provided {@link Reader}.
+            
+             @return  A {@link TokenStream} built from a {@link StandardTokenizer} filtered with
+                      {@link LowerCaseFilter}, {@link StandardFilter}, {@link StopFilter}, and 
+                      {@link BrazilianStemFilter}.
+        </member>
+        <member name="F:Lucene.Net.Analysis.BR.BrazilianStemFilter.stemmer">
+            The actual token in the input stream.
+        </member>
+        <member name="M:Lucene.Net.Analysis.BR.BrazilianStemFilter.IncrementToken">
+            <returns>Returns the next token in the stream, or null at EOS.</returns>
+        </member>
+        <member name="F:Lucene.Net.Analysis.BR.BrazilianStemmer.TERM">
+            Changed term
+        </member>
+        <member name="M:Lucene.Net.Analysis.BR.BrazilianStemmer.Stem(System.String)">
+             Stemms the given term to an unique <tt>discriminator</tt>.
+            
+             <param name="term"> The term that should be stemmed.</param>
+             <returns>     Discriminator for <tt>term</tt></returns>
+        </member>
+        <member name="M:Lucene.Net.Analysis.BR.BrazilianStemmer.isStemmable(System.String)">
+             Checks a term if it can be processed correctly.
+            
+             <returns> true if, and only if, the given term consists in letters.</returns>
+        </member>
+        <member name="M:Lucene.Net.Analysis.BR.BrazilianStemmer.isIndexable(System.String)">
+             Checks a term if it can be processed indexed.
+            
+             <returns> true if it can be indexed</returns>
+        </member>
+        <member name="M:Lucene.Net.Analysis.BR.BrazilianStemmer.isVowel(System.Char)">
+                     * See if string is 'a','e','i','o','u'
+                   *
+                   * <returns>true if is vowel</returns>
+        </member>
+        <member name="M:Lucene.Net.Analysis.BR.BrazilianStemmer.getR1(System.String)">
+                     * Gets R1
+                   *
+                   * R1 - is the region after the first non-vowel follwing a vowel,
+                   *      or is the null region at the end of the word if there is
+                   *      no such non-vowel.
+                   *
+                   * <returns>null or a string representing R1</returns>
+        </member>
+        <member name="M:Lucene.Net.Analysis.BR.BrazilianStemmer.getRV(System.String)">
+                     * Gets RV
+                   *
+                   * RV - IF the second letter is a consoant, RV is the region after
+                   *      the next following vowel,
+                   *
+                   *      OR if the first two letters are vowels, RV is the region
+                   *      after the next consoant,
+                   *
+                   *      AND otherwise (consoant-vowel case) RV is the region after
+                   *      the third letter.
+                   *
+                   *      BUT RV is the end of the word if this positions cannot be
+                   *      found.
+                   *
+                   * <returns>null or a string representing RV</returns>
+        </member>
+        <member name="M:Lucene.Net.Analysis.BR.BrazilianStemmer.changeTerm(System.String)">
+             1) Turn to lowercase
+             2) Remove accents
+             3) ã -> a ; õ -> o
+             4) ç -> c
+            
+             <returns>null or a string transformed</returns>
+        </member>
+        <member name="M:Lucene.Net.Analysis.BR.BrazilianStemmer.suffix(System.String,System.String)">
+             Check if a string ends with a suffix
+            
+             <returns>true if the string ends with the specified suffix</returns>
+        </member>
+        <member name="M:Lucene.Net.Analysis.BR.BrazilianStemmer.replaceSuffix(System.String,System.String,System.String)">
+             Replace a string suffix by another
+            
+             <returns>the replaced string</returns>
+        </member>
+        <member name="M:Lucene.Net.Analysis.BR.BrazilianStemmer.removeSuffix(System.String,System.String)">
+             Remove a string suffix
+            
+             <returns>the string without the suffix</returns>
+        </member>
+        <member name="M:Lucene.Net.Analysis.BR.BrazilianStemmer.suffixPreceded(System.String,System.String,System.String)">
+             See if a suffix is preceded by a string
+            
+             <returns>true if the suffix is preceded</returns>
+        </member>
+        <member name="M:Lucene.Net.Analysis.BR.BrazilianStemmer.createCT(System.String)">
+            Creates CT (changed term) , substituting * 'ã' and 'õ' for 'a~' and 'o~'.
+        </member>
+        <member name="M:Lucene.Net.Analysis.BR.BrazilianStemmer.step1">
+                     * Standart suffix removal.
+                   * Search for the longest among the following suffixes, and perform
+                   * the following actions:
+                   *
+                   * <returns>false if no ending was removed</returns>
+        </member>
+        <member name="M:Lucene.Net.Analysis.BR.BrazilianStemmer.step2">
+                     * Verb suffixes.
+                   *
+                   * Search for the longest among the following suffixes in RV,
+                   * and if found, delete.
+                   *
+                   * <returns>false if no ending was removed</returns>
+        </member>
+        <member name="M:Lucene.Net.Analysis.BR.BrazilianStemmer.step3">
+                     * Delete suffix 'i' if in RV and preceded by 'c'
+                   *
+        </member>
+        <member name="M:Lucene.Net.Analysis.BR.BrazilianStemmer.step4">
+                     * Residual suffix
+                   *
+                   * If the word ends with one of the suffixes (os a i o á í ó)
+                   * in RV, delete it
+                   *
+        </member>
+        <member name="M:Lucene.Net.Analysis.BR.BrazilianStemmer.step5">
+                     * If the word ends with one of ( e é ê) in RV,delete it,
+                   * and if preceded by 'gu' (or 'ci') with the 'u' (or 'i') in RV,
+                   * delete the 'u' (or 'i')
+                   *
+                   * Or if the word ends ç remove the cedilha
+                   *
+        </member>
+        <member name="M:Lucene.Net.Analysis.BR.BrazilianStemmer.Log">
+             For log and debug purpose
+            
+             <returns> TERM, CT, RV, R1 and R2</returns>
+        </member>
+        <member name="T:Lucene.Net.Analysis.CJK.CJKAnalyzer">
+            <summary>
+            Filters CJKTokenizer with StopFilter.
+            
+            <author>Che, Dong</author>
+            </summary>
+        </member>
+        <member name="F:Lucene.Net.Analysis.CJK.CJKAnalyzer.STOP_WORDS">
+            <summary>
+            An array containing some common English words that are not usually
+            useful for searching. and some double-byte interpunctions.....
+            </summary>
+        </member>
+        <member name="M:Lucene.Net.Analysis.CJK.CJKAnalyzer.GetDefaultStopSet">
+            <summary>
+            Returns an unmodifiable instance of the default stop-words set.
+            </summary>
+            <returns>Returns an unmodifiable instance of the default stop-words set.</returns>
+        </member>
+        <member name="F:Lucene.Net.Analysis.CJK.CJKAnalyzer.stopTable">
+            <summary>
+            stop word list
+            </summary>
+        </member>
+        <member name="M:Lucene.Net.Analysis.CJK.CJKAnalyzer.#ctor(Lucene.Net.Util.Version,System.String[])">
+            <summary>
+            Builds an analyzer which removes words in the provided array.
+            </summary>
+            <param name="stopWords">stop word array</param>
+        </member>
+        <member name="M:Lucene.Net.Analysis.CJK.CJKAnalyzer.TokenStream(System.String,System.IO.TextReader)">
+            <summary>
+            get token stream from input
+            </summary>
+            <param name="fieldName">lucene field name</param>
+            <param name="reader">input reader</param>
+            <returns>Token Stream</returns>
+        </member>
+        <member name="M:Lucene.Net.Analysis.CJK.CJKAnalyzer.ReusableTokenStream(System.String,System.IO.TextReader)">
+             Returns a (possibly reused) {@link TokenStream} which tokenizes all the text 
+             in the provided {@link Reader}.
+            
+             @param fieldName lucene field name
+             @param reader    Input {@link Reader}
+             @return A {@link TokenStream} built from {@link CJKTokenizer}, filtered with
+                {@link StopFilter}
+        </member>
+        <member name="T:Lucene.Net.Analysis.CJK.CJKTokenizer">
+            <summary>
+            <p>
+            CJKTokenizer was modified from StopTokenizer which does a decent job for
+            most European languages. and it perferm other token method for double-byte
+            chars: the token will return at each two charactors with overlap match.<br/>
+            Example: "java C1C2C3C4" will be segment to: "java" "C1C2" "C2C3" "C3C4" it
+            also need filter filter zero length token ""<br/>
+            for Digit: digit, '+', '#' will token as letter<br/>
+            for more info on Asia language(Chinese Japanese Korean) text segmentation:
+            please search  <a
+            href="http://www.google.com/search?q=word+chinese+segment">google</a>
+            </p>
+            
+            @author Che, Dong
+            @version $Id: CJKTokenizer.java,v 1.3 2003/01/22 20:54:47 otis Exp $
+            </summary>
+        </member>
+        <member name="F:Lucene.Net.Analysis.CJK.CJKTokenizer.WORD_TYPE">
+            <summary>
+            Word token type
+            </summary>
+        </member>
+        <member name="F:Lucene.Net.Analysis.CJK.CJKTokenizer.SINGLE_TOKEN_TYPE">
+            <summary>
+            Single byte token type
+            </summary>
+        </member>
+        <member name="F:Lucene.Net.Analysis.CJK.CJKTokenizer.DOUBLE_TOKEN_TYPE">
+            <summary>
+            Double byte token type
+            </summary>
+        </member>
+        <member name="F:Lucene.Net.Analysis.CJK.CJKTokenizer.TOKEN_TYPE_NAMES">
+            <summary>
+            Names for token types
+            </summary>
+        </member>
+        <member name="F:Lucene.Net.Analysis.CJK.CJKTokenizer.MAX_WORD_LEN">
+            <summary>
+            Max word length
+            </summary>
+        </member>
+        <member name="F:Lucene.Net.Analysis.CJK.CJKTokenizer.IO_BUFFER_SIZE">
+            <summary>
+            buffer size
+            </summary>
+        </member>
+        <member name="F:Lucene.Net.Analysis.CJK.CJKTokenizer.offset">
+            <summary>
+            word offset, used to imply which character(in ) is parsed
+            </summary>
+        </member>
+        <member name="F:Lucene.Net.Analysis.CJK.CJKTokenizer.bufferIndex">
+            <summary>
+            the index used only for ioBuffer
+            </summary>
+        </member>
+        <member name="F:Lucene.Net.Analysis.CJK.CJKTokenizer.dataLen">
+            <summary>
+            data length
+            </summary>
+        </member>
+        <member name="F:Lucene.Net.Analysis.CJK.CJKTokenizer.buffer">
+            <summary>
+            character buffer, store the characters which are used to compose <br/>
+            the returned Token
+            </summary>
+        </member>
+        <member name="F:Lucene.Net.Analysis.CJK.CJKTokenizer.ioBuffer">
+            <summary>
+            I/O buffer, used to store the content of the input(one of the <br/>
+            members of Tokenizer)
+            </summary>
+        </member>
+        <member name="F:Lucene.Net.Analysis.CJK.CJKTokenizer.tokenType">
+            <summary>
+            word type: single=>ASCII  double=>non-ASCII word=>default
+            </summary>
+        </member>
+        <member name="F:Lucene.Net.Analysis.CJK.CJKTokenizer.preIsTokened">
+            <summary>
+            tag: previous character is a cached double-byte character  "C1C2C3C4"
+            ----(set the C1 isTokened) C1C2 "C2C3C4" ----(set the C2 isTokened)
+            C1C2 C2C3 "C3C4" ----(set the C3 isTokened) "C1C2 C2C3 C3C4"
+            </summary>
+        </member>
+        <member name="M:Lucene.Net.Analysis.CJK.CJKTokenizer.#ctor(System.IO.TextReader)">
+            <summary>
+            Construct a token stream processing the given input.
+            </summary>
+            <param name="_in">I/O reader</param>
+        </member>
+        <!-- Badly formed XML comment ignored for member "F:Lucene.Net.Analysis.CJK.CJKTokenizer.isBasicLatin" -->
+        <member name="T:Lucene.Net.Analysis.Cn.ChineseAnalyzer">
+            <summary>
+            An <see cref="T:Lucene.Net.Analysis.Analyzer"/> that tokenizes text with <see cref="T:Lucene.Net.Analysis.Cn.ChineseTokenizer"/> and
+            filters with <see cref="T:Lucene.Net.Analysis.Cn.ChineseFilter"/>
+            </summary>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Cn.ChineseAnalyzer.TokenStream(System.String,System.IO.TextReader)">
+            <summary>
+            Creates a TokenStream which tokenizes all the text in the provided Reader.
+            </summary>
+            <returns>A TokenStream build from a ChineseTokenizer filtered with ChineseFilter.</returns>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Cn.ChineseAnalyzer.ReusableTokenStream(System.String,System.IO.TextReader)">
+            <summary>
+            Returns a (possibly reused) <see cref="M:Lucene.Net.Analysis.Cn.ChineseAnalyzer.TokenStream(System.String,System.IO.TextReader)"/> which tokenizes all the text in the
+            provided <see cref="T:System.IO.TextReader"/>.
+            </summary>
+            <returns>
+              A <see cref="M:Lucene.Net.Analysis.Cn.ChineseAnalyzer.TokenStream(System.String,System.IO.TextReader)"/> built from a <see cref="T:Lucene.Net.Analysis.Cn.ChineseTokenizer"/> 
+              filtered with <see cref="T:Lucene.Net.Analysis.Cn.ChineseFilter"/>.
+            </returns>
+        </member>
+        <member name="T:Lucene.Net.Analysis.Cn.ChineseFilter">
+            <summary>
+            A {@link TokenFilter} with a stop word table.  
+            <ul>
+            <li>Numeric tokens are removed.</li>
+            <li>English tokens must be larger than 1 char.</li>
+            <li>One Chinese char as one Chinese word.</li>
+            </ul>
+            TO DO:
+            <ol>
+            <li>Add Chinese stop words, such as \ue400</li>
+            <li>Dictionary based Chinese word extraction</li>
+            <li>Intelligent Chinese word extraction</li>
+            </ol>
+            </summary>
+        </member>
+        <member name="T:Lucene.Net.Analysis.Cn.ChineseTokenizer">
+            <summary>
+            Tokenize Chinese text as individual chinese chars.
+            <p>
+            The difference between ChineseTokenizer and
+            CJKTokenizer is that they have different
+            token parsing logic.
+            </p>
+            <p>
+            For example, if the Chinese text
+            "C1C2C3C4" is to be indexed:
+            <ul>
+            <li>The tokens returned from ChineseTokenizer are C1, C2, C3, C4</li>
+            <li>The tokens returned from the CJKTokenizer are C1C2, C2C3, C3C4.</li>
+            </ul>
+            </p>
+            <p>
+            Therefore the index created by CJKTokenizer is much larger.
+            </p>
+            <p>
+            The problem is that when searching for C1, C1C2, C1C3,
+            C4C2, C1C2C3 ... the ChineseTokenizer works, but the
+            CJKTokenizer will not work.
+            </p>
+            </summary> 
+        </member>
+        <member name="T:Lucene.Net.Analysis.Compound.CompoundWordTokenFilterBase">
+            Base class for decomposition token filters.
+        </member>
+        <member name="F:Lucene.Net.Analysis.Compound.CompoundWordTokenFilterBase.DEFAULT_MIN_WORD_SIZE">
+            The default for minimal word length that gets decomposed
+        </member>
+        <member name="F:Lucene.Net.Analysis.Compound.CompoundWordTokenFilterBase.DEFAULT_MIN_SUBWORD_SIZE">
+            The default for minimal length of subwords that get propagated to the output of this filter
+        </member>
+        <member name="F:Lucene.Net.Analysis.Compound.CompoundWordTokenFilterBase.DEFAULT_MAX_SUBWORD_SIZE">
+            The default for maximal length of subwords that get propagated to the output of this filter
+        </member>
+        <member name="M:Lucene.Net.Analysis.Compound.CompoundWordTokenFilterBase.MakeDictionary(System.String[])">
+            Create a set of words from an array
+            The resulting Set does case insensitive matching
+            TODO We should look for a faster dictionary lookup approach.
+            @param dictionary 
+            @return {@link Set} of lowercased terms 
+        </member>
+        <member name="T:Lucene.Net.Analysis.Compound.DictionaryCompoundWordTokenFilter">
+            A {@link TokenFilter} that decomposes compound words found in many Germanic languages.
+            <p>
+            "Donaudampfschiff" becomes Donau, dampf, schiff so that you can find
+            "Donaudampfschiff" even when you only enter "schiff". 
+             It uses a brute-force algorithm to achieve this.
+            </p>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Compound.DictionaryCompoundWordTokenFilter.#ctor(Lucene.Net.Analysis.TokenStream,System.String[],System.Int32,System.Int32,System.Int32,System.Boolean)">
+            
+            @param input the {@link TokenStream} to process
+            @param dictionary the word dictionary to match against
+            @param minWordSize only words longer than this get processed
+            @param minSubwordSize only subwords longer than this get to the output stream
+            @param maxSubwordSize only subwords shorter than this get to the output stream
+            @param onlyLongestMatch Add only the longest matching subword to the stream
+        </member>
+        <member name="M:Lucene.Net.Analysis.Compound.DictionaryCompoundWordTokenFilter.#ctor(Lucene.Net.Analysis.TokenStream,System.String[])">
+            
+            @param input the {@link TokenStream} to process
+            @param dictionary the word dictionary to match against
+        </member>
+        <member name="M:Lucene.Net.Analysis.Compound.DictionaryCompoundWordTokenFilter.#ctor(Lucene.Net.Analysis.TokenStream,System.Collections.Generic.ISet{System.String})">
+            
+            @param input the {@link TokenStream} to process
+            @param dictionary the word dictionary to match against. If this is a {@link org.apache.lucene.analysis.CharArraySet CharArraySet} it must have set ignoreCase=false and only contain
+                   lower case strings. 
+        </member>
+        <member name="M:Lucene.Net.Analysis.Compound.DictionaryCompoundWordTokenFilter.#ctor(Lucene.Net.Analysis.TokenStream,System.Collections.Generic.ISet{System.String},System.Int32,System.Int32,System.Int32,System.Boolean)">
+            
+            @param input the {@link TokenStream} to process
+            @param dictionary the word dictionary to match against. If this is a {@link org.apache.lucene.analysis.CharArraySet CharArraySet} it must have set ignoreCase=false and only contain
+                   lower case strings. 
+            @param minWordSize only words longer than this get processed
+            @param minSubwordSize only subwords longer than this get to the output stream
+            @param maxSubwordSize only subwords shorter than this get to the output stream
+            @param onlyLongestMatch Add only the longest matching subword to the stream
+        </member>
+        <member name="T:Lucene.Net.Analysis.Cz.CzechAnalyzer">
+             {@link Analyzer} for Czech language. 
+             <p>
+             Supports an external list of stopwords (words that
+             will not be indexed at all). 
+             A default set of stopwords is used unless an alternative list is specified.
+             </p>
+            
+             <p><b>NOTE</b>: This class uses the same {@link Version}
+             dependent settings as {@link StandardAnalyzer}.</p>
+        </member>
+        <member name="F:Lucene.Net.Analysis.Cz.CzechAnalyzer.CZECH_STOP_WORDS">
+            List of typical stopwords.
+            @deprecated use {@link #getDefaultStopSet()} instead
+        </member>
+        <member name="M:Lucene.Net.Analysis.Cz.CzechAnalyzer.getDefaultStopSet">
+            Returns a set of default Czech-stopwords 
+            @return a set of default Czech-stopwords 
+        </member>
+        <member name="F:Lucene.Net.Analysis.Cz.CzechAnalyzer.stoptable">
+            Contains the stopwords used with the {@link StopFilter}.
+        </member>
+        <member name="M:Lucene.Net.Analysis.Cz.CzechAnalyzer.#ctor(Lucene.Net.Util.Version)">
+            Builds an analyzer with the default stop words ({@link #CZECH_STOP_WORDS}).
+        </member>
+        <member name="M:Lucene.Net.Analysis.Cz.CzechAnalyzer.#ctor(Lucene.Net.Util.Version,System.Collections.Generic.ISet{System.String})">
+            Builds an analyzer with the given stop words and stemming exclusion words
+            
+            @param matchVersion
+                     lucene compatibility version
+            @param stopwords
+                     a stopword set
+        </member>
+        <member name="M:Lucene.Net.Analysis.Cz.CzechAnalyzer.#ctor(Lucene.Net.Util.Version,System.String[])">
+            Builds an analyzer with the given stop words.
+            @deprecated use {@link #CzechAnalyzer(Version, Set)} instead
+        </member>
+        <member name="M:Lucene.Net.Analysis.Cz.CzechAnalyzer.#ctor(Lucene.Net.Util.Version,System.Collections.Generic.HashSet{System.String})">
+            Builds an analyzer with the given stop words.
+            
+            @deprecated use {@link #CzechAnalyzer(Version, Set)} instead
+        </member>
+        <member name="M:Lucene.Net.Analysis.Cz.CzechAnalyzer.#ctor(Lucene.Net.Util.Version,System.IO.FileInfo)">
+            Builds an analyzer with the given stop words.
+            @deprecated use {@link #CzechAnalyzer(Version, Set)} instead
+        </member>
+        <member name="M:Lucene.Net.Analysis.Cz.CzechAnalyzer.LoadStopWords(System.IO.Stream,System.Text.Encoding)">
+            Loads stopwords hash from resource stream (file, database...).
+            @param   wordfile    File containing the wordlist
+            @param   encoding    Encoding used (win-1250, iso-8859-2, ...), null for default system encoding
+            @deprecated use {@link WordlistLoader#getWordSet(Reader, String) }
+                        and {@link #CzechAnalyzer(Version, Set)} instead
+        </member>
+        <member name="M:Lucene.Net.Analysis.Cz.CzechAnalyzer.TokenStream(System.String,System.IO.TextReader)">
+             Creates a {@link TokenStream} which tokenizes all the text in the provided {@link Reader}.
+            
+             @return  A {@link TokenStream} built from a {@link StandardTokenizer} filtered with
+             			{@link StandardFilter}, {@link LowerCaseFilter}, and {@link StopFilter}
+        </member>
+        <member name="M:Lucene.Net.Analysis.Cz.CzechAnalyzer.ReusableTokenStream(System.String,System.IO.TextReader)">
+             Returns a (possibly reused) {@link TokenStream} which tokenizes all the text in 
+             the provided {@link Reader}.
+            
+             @return  A {@link TokenStream} built from a {@link StandardTokenizer} filtered with
+                      {@link StandardFilter}, {@link LowerCaseFilter}, and {@link StopFilter}
+        </member>
+        <member name="T:Lucene.Net.Analysis.De.GermanAnalyzer">
+            <summary>
+            Analyzer for German language. Supports an external list of stopwords (words that
+            will not be indexed at all) and an external list of exclusions (word that will
+            not be stemmed, but indexed).
+            A default set of stopwords is used unless an alternative list is specified, the
+            exclusion list is empty by default.
+            </summary>
+        </member>
+        <member name="F:Lucene.Net.Analysis.De.GermanAnalyzer.GERMAN_STOP_WORDS">
+            <summary>
+            List of typical german stopwords.
+            </summary>
+        </member>
+        <member name="M:Lucene.Net.Analysis.De.GermanAnalyzer.GetDefaultStopSet">
+            <summary>
+            Returns a set of default German-stopwords 
+            </summary>
+        </member>
+        <member name="F:Lucene.Net.Analysis.De.GermanAnalyzer.stopSet">
+            <summary>
+            Contains the stopwords used with the StopFilter. 
+            </summary>
+        </member>
+        <member name="F:Lucene.Net.Analysis.De.GermanAnalyzer.exclusionSet">
+            <summary>
+            Contains words that should be indexed but not stemmed. 
+            </summary>
+        </member>
+        <member name="M:Lucene.Net.Analysis.De.GermanAnalyzer.#ctor">
+            <summary>
+            Builds an analyzer with the default stop words:
+            <see cref="M:Lucene.Net.Analysis.De.GermanAnalyzer.GetDefaultStopSet"/>
+            </summary>
+        </member>
+        <member name="M:Lucene.Net.Analysis.De.GermanAnalyzer.#ctor(Lucene.Net.Util.Version)">
+            <summary>
+            Builds an analyzer with the default stop words:
+            <see cref="M:Lucene.Net.Analysis.De.GermanAnalyzer.GetDefaultStopSet"/>
+            </summary>
+            <param name="matchVersion">Lucene compatibility version</param>
+        </member>
+        <member name="M:Lucene.Net.Analysis.De.GermanAnalyzer.#ctor(Lucene.Net.Util.Version,System.Boolean)">
+            <summary>
+            Builds an analyzer with the default stop words:
+            <see cref="M:Lucene.Net.Analysis.De.GermanAnalyzer.GetDefaultStopSet"/>
+             </summary>
+            <param name="matchVersion">Lucene compatibility version</param>
+            <param name="normalizeDin2">Specifies if the DIN-2007-2 style stemmer should be used in addition to DIN1.  This
+            will cause words with 'ae', 'ue', or 'oe' in them (expanded umlauts) to be first converted to 'a', 'u', and 'o'
+            respectively, before the DIN1 stemmer is invoked.</param>
+        </member>
+        <member name="M:Lucene.Net.Analysis.De.GermanAnalyzer.#ctor(Lucene.Net.Util.Version,System.Collections.Generic.ISet{System.String})">
+            <summary>
+            Builds an analyzer with the given stop words, using the default DIN-5007-1 stemmer
+            </summary>
+            <param name="matchVersion">Lucene compatibility version</param>
+            <param name="stopwords">a stopword set</param>
+        </member>
+        <member name="M:Lucene.Net.Analysis.De.GermanAnalyzer.#ctor(Lucene.Net.Util.Version,System.Collections.Generic.ISet{System.String},System.Boolean)">
+            <summary>
+            Builds an analyzer with the given stop words
+            </summary>
+            <param name="matchVersion">Lucene compatibility version</param>
+            <param name="stopwords">a stopword set</param>
+            <param name="normalizeDin2">Specifies if the DIN-2007-2 style stemmer should be used in addition to DIN1.  This
+            will cause words with 'ae', 'ue', or 'oe' in them (expanded umlauts) to be first converted to 'a', 'u', and 'o'
+            respectively, before the DIN1 stemmer is invoked.</param>
+        </member>
+        <member name="M:Lucene.Net.Analysis.De.GermanAnalyzer.#ctor(Lucene.Net.Util.Version,System.Collections.Generic.ISet{System.String},System.Collections.Generic.ISet{System.String})">
+            <summary>
+            Builds an analyzer with the given stop words, using the default DIN-5007-1 stemmer
+            </summary>
+            <param name="matchVersion">lucene compatibility version</param>
+            <param name="stopwords">a stopword set</param>
+            <param name="stemExclusionSet">a stemming exclusion set</param>
+        </member>
+        <member name="M:Lucene.Net.Analysis.De.GermanAnalyzer.#ctor(Lucene.Net.Util.Version,System.Collections.Generic.ISet{System.String},System.Collections.Generic.ISet{System.String},System.Boolean)">
+            <summary>
+            Builds an analyzer with the given stop words
+            </summary>
+            <param name="matchVersion">lucene compatibility version</param>
+            <param name="stopwords">a stopword set</param>
+            <param name="stemExclusionSet">a stemming exclusion set</param>
+            <param name="normalizeDin2">Specifies if the DIN-2007-2 style stemmer should be used in addition to DIN1.  This
+            will cause words with 'ae', 'ue', or 'oe' in them (expanded umlauts) to be first converted to 'a', 'u', and 'o'
+            respectively, before the DIN1 stemmer is invoked.</param>
+        </member>
+        <member name="M:Lucene.Net.Analysis.De.GermanAnalyzer.#ctor(Lucene.Net.Util.Version,System.String[])">
+            <summary>
+            Builds an analyzer with the given stop words. 
+            </summary>
+            <param name="stopwords"></param>
+        </member>
+        <member name="M:Lucene.Net.Analysis.De.GermanAnalyzer.#ctor(Lucene.Net.Util.Version,System.Collections.Generic.IDictionary{System.String,System.String})">
+            <summary>
+            Builds an analyzer with the given stop words.
+            </summary>
+        </member>
+        <member name="M:Lucene.Net.Analysis.De.GermanAnalyzer.#ctor(Lucene.Net.Util.Version,System.IO.FileInfo)">
+            <summary>
+            Builds an analyzer with the given stop words. 
+            </summary>
+        </member>
+        <member name="M:Lucene.Net.Analysis.De.GermanAnalyzer.SetStemExclusionTable(System.String[])">
+            <summary>
+            Builds an exclusionlist from an array of Strings. 
+            </summary>
+        </member>
+        <member name="M:Lucene.Net.Analysis.De.GermanAnalyzer.SetStemExclusionTable(System.Collections.Generic.IDictionary{System.String,System.String})">
+            <summary>
+            Builds an exclusionlist from a IDictionary. 
+            </summary>
+        </member>
+        <member name="M:Lucene.Net.Analysis.De.GermanAnalyzer.SetStemExclusionTable(System.IO.FileInfo)">
+            <summary>
+            Builds an exclusionlist from the words contained in the given file. 
+            </summary>
+        </member>
+        <member name="M:Lucene.Net.Analysis.De.GermanAnalyzer.TokenStream(System.String,System.IO.TextReader)">
+            <summary>
+            Creates a TokenStream which tokenizes all the text in the provided TextReader. 
+            </summary>
+            <param name="fieldName"></param>
+            <param name="reader"></param>
+            <returns>A TokenStream build from a StandardTokenizer filtered with StandardFilter, StopFilter, GermanStemFilter</returns>
+        </member>
+        <member name="T:Lucene.Net.Analysis.De.GermanStemFilter">
+            <summary>
+            A filter that stems German words. It supports a table of words that should
+            not be stemmed at all. The stemmer used can be changed at runtime after the
+            filter object is created (as long as it is a GermanStemmer).
+            </summary>
+        </member>
+        <member name="F:Lucene.Net.Analysis.De.GermanStemFilter.stemmer">
+            <summary>
+            The actual token in the input stream.
+            </summary>
+        </member>
+        <member name="M:Lucene.Net.Analysis.De.GermanStemFilter.#ctor(Lucene.Net.Analysis.TokenStream,System.Collections.Generic.ISet{System.String})">
+            <summary>
+            Builds a GermanStemFilter that uses an exclusiontable. 
+            </summary>
+            <param name="_in"></param>
+            <param name="exclusiontable"></param>
+        </member>
+        <member name="M:Lucene.Net.Analysis.De.GermanStemFilter.#ctor(Lucene.Net.Analysis.TokenStream,System.Collections.Generic.ISet{System.String},System.Boolean)">
+            <summary>
+            Builds a GermanStemFilter that uses an exclusiontable. 
+            </summary>
+            <param name="_in"></param>
+            <param name="exclusiontable"></param>
+            <param name="normalizeDin2">Specifies if the DIN-2007-2 style stemmer should be used in addition to DIN1.  This
+            will cause words with 'ae', 'ue', or 'oe' in them (expanded umlauts) to be first converted to 'a', 'u', and 'o'
+            respectively, before the DIN1 stemmer is invoked.</param>
+        </member>
+        <member name="M:Lucene.Net.Analysis.De.GermanStemFilter.IncrementToken">
+            <returns>
+            Returns true for next token in the stream, or false at EOS
+            </returns>
+        </member>
+        <member name="M:Lucene.Net.Analysis.De.GermanStemFilter.SetStemmer(Lucene.Net.Analysis.De.GermanStemmer)">
+            <summary>
+            Set a alternative/custom GermanStemmer for this filter. 
+            </summary>
+            <param name="stemmer"></param>
+        </member>
+        <member name="M:Lucene.Net.Analysis.De.GermanStemFilter.SetExclusionTable(System.Collections.Generic.ISet{System.String})">
+            <summary>
+            Set an alternative exclusion list for this filter. 
+            </summary>
+            <param name="exclusiontable"></param>
+        </member>
+        <member name="T:Lucene.Net.Analysis.De.GermanStemmer">
+            <summary>
+            A stemmer for German words. The algorithm is based on the report
+            "A Fast and Simple Stemming Algorithm for German Words" by JГ¶rg
+            Caumanns (joerg.caumanns@isst.fhg.de).
+            </summary>
+        </member>
+        <member name="F:Lucene.Net.Analysis.De.GermanStemmer.sb">
+            <summary>
+            Buffer for the terms while stemming them. 
+            </summary>
+        </member>
+        <member name="F:Lucene.Net.Analysis.De.GermanStemmer.substCount">
+            <summary>
+            Amount of characters that are removed with <tt>Substitute()</tt> while stemming.
+            </summary>
+        </member>
+        <member name="M:Lucene.Net.Analysis.De.GermanStemmer.Stem(System.String)">
+            <summary>
+            Stemms the given term to an unique <tt>discriminator</tt>.
+            </summary>
+            <param name="term">The term that should be stemmed.</param>
+            <returns>Discriminator for <tt>term</tt></returns>
+        </member>
+        <member name="M:Lucene.Net.Analysis.De.GermanStemmer.IsStemmable(System.String)">
+            <summary>
+            Checks if a term could be stemmed.
+            </summary>
+            <param name="term"></param>
+            <returns>true if, and only if, the given term consists in letters.</returns>
+        </member>
+        <member name="M:Lucene.Net.Analysis.De.GermanStemmer.Strip(System.Text.StringBuilder)">
+            <summary>
+            Suffix stripping (stemming) on the current term. The stripping is reduced
+            to the seven "base" suffixes "e", "s", "n", "t", "em", "er" and * "nd",
+            from which all regular suffixes are build of. The simplification causes
+            some overstemming, and way more irregular stems, but still provides unique.
+            discriminators in the most of those cases.
+            The algorithm is context free, except of the length restrictions.
+            </summary>
+            <param name="buffer"></param>
+        </member>
+        <member name="M:Lucene.Net.Analysis.De.GermanStemmer.Optimize(System.Text.StringBuilder)">
+            <summary>
+            Does some optimizations on the term. This optimisations are contextual.
+            </summary>
+            <param name="buffer"></param>
+        </member>
+        <member name="M:Lucene.Net.Analysis.De.GermanStemmer.RemoveParticleDenotion(System.Text.StringBuilder)">
+            <summary>
+            Removes a particle denotion ("ge") from a term.
+            </summary>
+            <param name="buffer"></param>
+        </member>
+        <member name="M:Lucene.Net.Analysis.De.GermanStemmer.Substitute(System.Text.StringBuilder)">
+             <summary>
+             Do some substitutions for the term to reduce overstemming:
+            
+             - Substitute Umlauts with their corresponding vowel: äöü -> aou,
+               "&#223;" is substituted by "ss"
+             - Substitute a second char of a pair of equal characters with
+             an asterisk: ?? -&gt; ?*
+             - Substitute some common character combinations with a token:
+               sch/ch/ei/ie/ig/st -&gt; $/В&#167;/%/&amp;/#/!
+             </summary>
+        </member>
+        <member name="M:Lucene.Net.Analysis.De.GermanStemmer.Resubstitute(System.Text.StringBuilder)">
+            <summary>
+            Undoes the changes made by Substitute(). That are character pairs and
+            character combinations. Umlauts will remain as their corresponding vowel,
+            as "?" remains as "ss".
+            </summary>
+            <param name="buffer"></param>
+        </member>
+        <member name="T:Lucene.Net.Analysis.De.GermanDIN2Stemmer">
+            <summary>
+            A stemmer for the german language that uses the
+            DIN-5007-2 "Phone Book" rules for handling
+            umlaut characters.
+            </summary>
+        </member>
+        <member name="T:Lucene.Net.Analysis.El.GreekAnalyzer">
+             {@link Analyzer} for the Greek language. 
+             <p>
+             Supports an external list of stopwords (words
+             that will not be indexed at all).
+             A default set of stopwords is used unless an alternative list is specified.
+             </p>
+            
+             <p><b>NOTE</b>: This class uses the same {@link Version}
+             dependent settings as {@link StandardAnalyzer}.</p>
+        </member>
+        <member name="F:Lucene.Net.Analysis.El.GreekAnalyzer.GREEK_STOP_WORDS">
+            List of typical Greek stopwords.
+        </member>
+        <member name="M:Lucene.Net.Analysis.El.GreekAnalyzer.GetDefaultStopSet">
+            Returns a set of default Greek-stopwords 
+            @return a set of default Greek-stopwords 
+        </member>
+        <member name="F:Lucene.Net.Analysis.El.GreekAnalyzer.stopSet">
+            Contains the stopwords used with the {@link StopFilter}.
+        </member>
+        <member name="M:Lucene.Net.Analysis.El.GreekAnalyzer.#ctor(Lucene.Net.Util.Version,System.Collections.Generic.ISet{System.String})">
+            Builds an analyzer with the given stop words 
+            
+            @param matchVersion
+                     lucene compatibility version
+            @param stopwords
+                     a stopword set
+        </member>
+        <member name="M:Lucene.Net.Analysis.El.GreekAnalyzer.#ctor(Lucene.Net.Util.Version,System.String[])">
+            Builds an analyzer with the given stop words.
+            @param stopwords Array of stopwords to use.
+            @deprecated use {@link #GreekAnalyzer(Version, Set)} instead
+        </member>
+        <member name="M:Lucene.Net.Analysis.El.GreekAnalyzer.#ctor(Lucene.Net.Util.Version,System.Collections.Generic.IDictionary{System.String,System.String})">
+            Builds an analyzer with the given stop words.
+            @deprecated use {@link #GreekAnalyzer(Version, Set)} instead
+        </member>
+        <member name="M:Lucene.Net.Analysis.El.GreekAnalyzer.TokenStream(System.String,System.IO.TextReader)">
+             Creates a {@link TokenStream} which tokenizes all the text in the provided {@link Reader}.
+            
+             @return  A {@link TokenStream} built from a {@link StandardTokenizer} filtered with
+                              {@link GreekLowerCaseFilter} and {@link StopFilter}
+        </member>
+        <member name="M:Lucene.Net.Analysis.El.GreekAnalyzer.ReusableTokenStream(System.String,System.IO.TextReader)">
+             Returns a (possibly reused) {@link TokenStream} which tokenizes all the text 
+             in the provided {@link Reader}.
+            
+             @return  A {@link TokenStream} built from a {@link StandardTokenizer} filtered with
+                              {@link GreekLowerCaseFilter} and {@link StopFilter}
+        </member>
+        <member name="T:Lucene.Net.Analysis.El.GreekLowerCaseFilter">
+             Normalizes token text to lower case, removes some Greek diacritics,
+             and standardizes final sigma to sigma. 
+            
+        </member>
+        <member name="T:Lucene.Net.Analysis.Fa.PersianAnalyzer">
+            {@link Analyzer} for Persian.
+            <p>
+            This Analyzer uses {@link ArabicLetterTokenizer} which implies tokenizing around
+            zero-width non-joiner in addition to whitespace. Some persian-specific variant forms (such as farsi
+            yeh and keheh) are standardized. "Stemming" is accomplished via stopwords.
+            </p>
+        </member>
+        <member name="F:Lucene.Net.Analysis.Fa.PersianAnalyzer.DEFAULT_STOPWORD_FILE">
+            File containing default Persian stopwords.
+            
+            Default stopword list is from
+            http://members.unine.ch/jacques.savoy/clef/index.html The stopword list is
+            BSD-Licensed.
+            
+        </member>
+        <member name="F:Lucene.Net.Analysis.Fa.PersianAnalyzer.stoptable">
+            Contains the stopwords used with the StopFilter.
+        </member>
+        <member name="F:Lucene.Net.Analysis.Fa.PersianAnalyzer.STOPWORDS_COMMENT">
+            The comment character in the stopwords file. All lines prefixed with this
+            will be ignored
+        </member>
+        <member name="M:Lucene.Net.Analysis.Fa.PersianAnalyzer.getDefaultStopSet">
+            Returns an unmodifiable instance of the default stop-words set.
+            @return an unmodifiable instance of the default stop-words set.
+        </member>
+        <member name="M:Lucene.Net.Analysis.Fa.PersianAnalyzer.#ctor(Lucene.Net.Util.Version)">
+            Builds an analyzer with the default stop words:
+            {@link #DEFAULT_STOPWORD_FILE}.
+        </member>
+        <member name="M:Lucene.Net.Analysis.Fa.PersianAnalyzer.#ctor(Lucene.Net.Util.Version,System.Collections.Generic.ISet{System.String})">
+            Builds an analyzer with the given stop words 
+            
+            @param matchVersion
+                     lucene compatibility version
+            @param stopwords
+                     a stopword set
+        </member>
+        <member name="M:Lucene.Net.Analysis.Fa.PersianAnalyzer.#ctor(Lucene.Net.Util.Version,System.String[])">
+            Builds an analyzer with the given stop words.
+            @deprecated use {@link #PersianAnalyzer(Version, Set)} instead
+        </member>
+        <member name="M:Lucene.Net.Analysis.Fa.PersianAnalyzer.#ctor(Lucene.Net.Util.Version,System.Collections.Generic.IDictionary{System.String,System.String})">
+            Builds an analyzer with the given stop words.
+            @deprecated use {@link #PersianAnalyzer(Version, Set)} instead
+        </member>
+        <member name="M:Lucene.Net.Analysis.Fa.PersianAnalyzer.#ctor(Lucene.Net.Util.Version,System.IO.FileInfo)">
+            Builds an analyzer with the given stop words. Lines can be commented out
+            using {@link #STOPWORDS_COMMENT}
+            @deprecated use {@link #PersianAnalyzer(Version, Set)} instead
+        </member>
+        <member name="M:Lucene.Net.Analysis.Fa.PersianAnalyzer.TokenStream(System.String,System.IO.TextReader)">
+            Creates a {@link TokenStream} which tokenizes all the text in the provided
+            {@link Reader}.
+            
+            @return A {@link TokenStream} built from a {@link ArabicLetterTokenizer}
+                    filtered with {@link LowerCaseFilter}, 
+                    {@link ArabicNormalizationFilter},
+                    {@link PersianNormalizationFilter} and Persian Stop words
+        </member>
+        <member name="M:Lucene.Net.Analysis.Fa.PersianAnalyzer.ReusableTokenStream(System.String,System.IO.TextReader)">
+            Returns a (possibly reused) {@link TokenStream} which tokenizes all the text 
+            in the provided {@link Reader}.
+            
+            @return A {@link TokenStream} built from a {@link ArabicLetterTokenizer}
+                    filtered with {@link LowerCaseFilter}, 
+                    {@link ArabicNormalizationFilter},
+                    {@link PersianNormalizationFilter} and Persian Stop words
+        </member>
+        <member name="T:Lucene.Net.Analysis.Fa.PersianAnalyzer.DefaultSetHolder">
+            Atomically loads the DEFAULT_STOP_SET in a lazy fashion once the outer class 
+            accesses the static final set the first time.;
+        </member>
+        <member name="T:Lucene.Net.Analysis.Fa.PersianNormalizationFilter">
+            A {@link TokenFilter} that applies {@link PersianNormalizer} to normalize the
+            orthography.
+            
+        </member>
+        <!-- Badly formed XML comment ignored for member "T:Lucene.Net.Analysis.Fa.PersianNormalizer" -->
+        <member name="M:Lucene.Net.Analysis.Fa.PersianNormalizer.Normalize(System.Char[],System.Int32)">
+            Normalize an input buffer of Persian text
+            
+            @param s input buffer
+            @param len length of input buffer
+            @return length of input buffer after normalization
+        </member>
+        <member name="M:Lucene.Net.Analysis.Fa.PersianNormalizer.Delete(System.Char[],System.Int32,System.Int32)">
+            Delete a character in-place
+            
+            @param s Input Buffer
+            @param pos Position of character to delete
+            @param len length of input buffer
+            @return length of input buffer after deletion
+        </member>
+        <!-- Badly formed XML comment ignored for member "T:Lucene.Net.Analysis.Fr.ElisionFilter" -->
+        <member name="M:Lucene.Net.Analysis.Fr.ElisionFilter.#ctor(Lucene.Net.Analysis.TokenStream)">
+            Constructs an elision filter with standard stop words
+        </member>
+        <member name="M:Lucene.Net.Analysis.Fr.ElisionFilter.#ctor(Lucene.Net.Analysis.TokenStream,System.Collections.Generic.ISet{System.String})">
+            Constructs an elision filter with a Set of stop words
+        </member>
+        <member name="M:Lucene.Net.Analysis.Fr.ElisionFilter.#ctor(Lucene.Net.Analysis.TokenStream,System.Collections.Generic.IEnumerable{System.String})">
+            Constructs an elision filter with an array of stop words
+        </member>
+        <member name="M:Lucene.Net.Analysis.Fr.ElisionFilter.IncrementToken">
+            Increments the {@link TokenStream} with a {@link TermAttribute} without elisioned start
+        </member>
+        <!-- Badly formed XML comment ignored for member "T:Lucene.Net.Analysis.Fr.FrenchAnalyzer" -->
+        <member name="F:Lucene.Net.Analysis.Fr.FrenchAnalyzer.FRENCH_STOP_WORDS">
+            Extended list of typical French stopwords.
+            @deprecated use {@link #getDefaultStopSet()} instead
+        </member>
+        <member name="F:Lucene.Net.Analysis.Fr.FrenchAnalyzer.stoptable">
+            Contains the stopwords used with the {@link StopFilter}.
+        </member>
+        <member name="F:Lucene.Net.Analysis.Fr.FrenchAnalyzer.excltable">
+            Contains words that should be indexed but not stemmed.
+        </member>
+        <member name="M:Lucene.Net.Analysis.Fr.FrenchAnalyzer.GetDefaultStopSet">
+            Returns an unmodifiable instance of the default stop-words set.
+            @return an unmodifiable instance of the default stop-words set.
+        </member>
+        <member name="M:Lucene.Net.Analysis.Fr.FrenchAnalyzer.#ctor(Lucene.Net.Util.Version)">
+            Builds an analyzer with the default stop words ({@link #FRENCH_STOP_WORDS}).
+        </member>
+        <member name="M:Lucene.Net.Analysis.Fr.FrenchAnalyzer.#ctor(Lucene.Net.Util.Version,System.Collections.Generic.ISet{System.String})">
+            Builds an analyzer with the given stop words
+            
+            @param matchVersion
+                     lucene compatibility version
+            @param stopwords
+                     a stopword set
+        </member>
+        <member name="M:Lucene.Net.Analysis.Fr.FrenchAnalyzer.#ctor(Lucene.Net.Util.Version,System.Collections.Generic.ISet{System.String},System.Collections.Generic.ISet{System.String})">
+            Builds an analyzer with the given stop words
+            
+            @param matchVersion
+                     lucene compatibility version
+            @param stopwords
+                     a stopword set
+            @param stemExclutionSet
+                     a stemming exclusion set
+        </member>
+        <member name="M:Lucene.Net.Analysis.Fr.FrenchAnalyzer.#ctor(Lucene.Net.Util.Version,System.String[])">
+            Builds an analyzer with the given stop words.
+            @deprecated use {@link #FrenchAnalyzer(Version, Set)} instead
+        </member>
+        <member name="M:Lucene.Net.Analysis.Fr.FrenchAnalyzer.#ctor(Lucene.Net.Util.Version,System.IO.FileInfo)">
+            Builds an analyzer with the given stop words.
+            @throws IOException
+            @deprecated use {@link #FrenchAnalyzer(Version, Set)} instead
+        </member>
+        <member name="M:Lucene.Net.Analysis.Fr.FrenchAnalyzer.SetStemExclusionTable(System.String[])">
+            Builds an exclusionlist from an array of Strings.
+            @deprecated use {@link #FrenchAnalyzer(Version, Set, Set)} instead
+        </member>
+        <member name="M:Lucene.Net.Analysis.Fr.FrenchAnalyzer.SetStemExclusionTable(System.Collections.Generic.IDictionary{System.String,System.String})">
+            Builds an exclusionlist from a Map.
+            @deprecated use {@link #FrenchAnalyzer(Version, Set, Set)} instead
+        </member>
+        <member name="M:Lucene.Net.Analysis.Fr.FrenchAnalyzer.SetStemExclusionTable(System.IO.FileInfo)">
+            Builds an exclusionlist from the words contained in the given file.
+            @throws IOException
+            @deprecated use {@link #FrenchAnalyzer(Version, Set, Set)} instead
+        </member>
+        <member name="M:Lucene.Net.Analysis.Fr.FrenchAnalyzer.TokenStream(System.String,System.IO.TextReader)">
+             Creates a {@link TokenStream} which tokenizes all the text in the provided
+             {@link Reader}.
+            
+             @return A {@link TokenStream} built from a {@link StandardTokenizer} 
+                     filtered with {@link StandardFilter}, {@link StopFilter}, 
+                     {@link FrenchStemFilter} and {@link LowerCaseFilter}
+        </member>
+        <member name="M:Lucene.Net.Analysis.Fr.FrenchAnalyzer.ReusableTokenStream(System.String,System.IO.TextReader)">
+             Returns a (possibly reused) {@link TokenStream} which tokenizes all the 
+             text in the provided {@link Reader}.
+            
+             @return A {@link TokenStream} built from a {@link StandardTokenizer} 
+                     filtered with {@link StandardFilter}, {@link StopFilter}, 
+                     {@link FrenchStemFilter} and {@link LowerCaseFilter}
+        </member>
+        <member name="T:Lucene.Net.Analysis.Fr.FrenchStemFilter">
+            A {@link TokenFilter} that stems french words. 
+            <p>
+            It supports a table of words that should
+            not be stemmed at all. The used stemmer can be changed at runtime after the
+            filter object is created (as long as it is a {@link FrenchStemmer}).
+            </p>
+            NOTE: This stemmer does not implement the Snowball algorithm correctly,
+            especially involving case problems. It is recommended that you consider using
+            the "French" stemmer in the snowball package instead. This stemmer will likely
+            be deprecated in a future release.
+        </member>
+        <member name="F:Lucene.Net.Analysis.Fr.FrenchStemFilter.stemmer">
+            The actual token in the input stream.
+        </member>
+        <member name="M:Lucene.Net.Analysis.Fr.FrenchStemFilter.IncrementToken">
+            @return  Returns true for the next token in the stream, or false at EOS
+        </member>
+        <member name="M:Lucene.Net.Analysis.Fr.FrenchStemFilter.SetStemmer(Lucene.Net.Analysis.Fr.FrenchStemmer)">
+            Set a alternative/custom {@link FrenchStemmer} for this filter.
+        </member>
+        <member name="M:Lucene.Net.Analysis.Fr.FrenchStemFilter.SetExclusionTable(System.Collections.Generic.IDictionary{System.String,System.String})">
+            Set an alternative exclusion list for this filter.
+        </member>
+        <!-- Badly formed XML comment ignored for member "T:Lucene.Net.Analysis.Fr.FrenchStemmer" -->
+        <member name="F:Lucene.Net.Analysis.Fr.FrenchStemmer.sb">
+            Buffer for the terms while stemming them.
+        </member>
+        <member name="F:Lucene.Net.Analysis.Fr.FrenchStemmer.tb">
+            A temporary buffer, used to reconstruct R2
+        </member>
+        <member name="F:Lucene.Net.Analysis.Fr.FrenchStemmer.R0">
+            Region R0 is equal to the whole buffer
+        </member>
+        <member name="F:Lucene.Net.Analysis.Fr.FrenchStemmer.RV">
+            Region RV
+            "If the word begins with two vowels, RV is the region after the third letter,
+            otherwise the region after the first vowel not at the beginning of the word,
+            or the end of the word if these positions cannot be found."
+        </member>
+        <member name="F:Lucene.Net.Analysis.Fr.FrenchStemmer.R1">
+            Region R1
+            "R1 is the region after the first non-vowel following a vowel
+            or is the null region at the end of the word if there is no such non-vowel"
+        </member>
+        <member name="F:Lucene.Net.Analysis.Fr.FrenchStemmer.R2">
+            Region R2
+            "R2 is the region after the first non-vowel in R1 following a vowel
+            or is the null region at the end of the word if there is no such non-vowel"
+        </member>
+        <member name="F:Lucene.Net.Analysis.Fr.FrenchStemmer.suite">
+            Set to true if we need to perform step 2
+        </member>
+        <member name="F:Lucene.Net.Analysis.Fr.FrenchStemmer.modified">
+            Set to true if the buffer was modified
+        </member>
+        <member name="M:Lucene.Net.Analysis.Fr.FrenchStemmer.Stem(System.String)">
+             Stems the given term to a unique <tt>discriminator</tt>.
+            
+             @param term  java.langString The term that should be stemmed
+             @return java.lang.String  Discriminator for <tt>term</tt>
+        </member>
+        <!-- Badly formed XML comment ignored for member "M:Lucene.Net.Analysis.Fr.FrenchStemmer.SetStrings" -->
+        <!-- Badly formed XML comment ignored for member "M:Lucene.Net.Analysis.Fr.FrenchStemmer.Step1" -->
+        <!-- Badly formed XML comment ignored for member "M:Lucene.Net.Analysis.Fr.FrenchStemmer.Step2A" -->
+        <!-- Badly formed XML comment ignored for member "M:Lucene.Net.Analysis.Fr.FrenchStemmer.Step2B" -->
+        <!-- Badly formed XML comment ignored for member "M:Lucene.Net.Analysis.Fr.FrenchStemmer.Step3" -->
+        <!-- Badly formed XML comment ignored for member "M:Lucene.Net.Analysis.Fr.FrenchStemmer.Step4" -->
+        <!-- Badly formed XML comment ignored for member "M:Lucene.Net.Analysis.Fr.FrenchStemmer.Step5" -->
+        <!-- Badly formed XML comment ignored for member "M:Lucene.Net.Analysis.Fr.FrenchStemmer.Step6" -->
+        <member name="M:Lucene.Net.Analysis.Fr.FrenchStemmer.DeleteFromIfPrecededIn(System.String,System.String[],System.String,System.String)">
+             Delete a suffix searched in zone "source" if zone "from" contains prefix + search string
+            
+             @param source java.lang.String - the primary source zone for search
+             @param search java.lang.String[] - the strings to search for suppression
+             @param from java.lang.String - the secondary source zone for search
+             @param prefix java.lang.String - the prefix to add to the search string to test
+             @return bool - true if modified
+        </member>
+        <member name="M:Lucene.Net.Analysis.Fr.FrenchStemmer.DeleteFromIfTestVowelBeforeIn(System.String,System.String[],System.Boolean,System.String)">
+             Delete a suffix searched in zone "source" if the preceding letter is (or isn't) a vowel
+            
+             @param source java.lang.String - the primary source zone for search
+             @param search java.lang.String[] - the strings to search for suppression
+             @param vowel bool - true if we need a vowel before the search string
+             @param from java.lang.String - the secondary source zone for search (where vowel could be)
+             @return bool - true if modified
+        </member>
+        <member name="M:Lucene.Net.Analysis.Fr.FrenchStemmer.DeleteButSuffixFrom(System.String,System.String[],System.String,System.Boolean)">
+             Delete a suffix searched in zone "source" if preceded by the prefix
+            
+             @param source java.lang.String - the primary source zone for search
+             @param search java.lang.String[] - the strings to search for suppression
+             @param prefix java.lang.String - the prefix to add to the search string to test
+             @param without bool - true if it will be deleted even without prefix found
+        </member>
+        <!-- Badly formed XML comment ignored for member "M:Lucene.Net.Analysis.Fr.FrenchStemmer.DeleteButSuffixFromElseReplace(System.String,System.String[],System.String,System.Boolean,System.String,System.String)" -->
+        <member name="M:Lucene.Net.Analysis.Fr.FrenchStemmer.ReplaceFrom(System.String,System.String[],System.String)">
+             Replace a search string with another within the source zone
+            
+             @param source java.lang.String - the source zone for search
+             @param search java.lang.String[] - the strings to search for replacement
+             @param replace java.lang.String - the replacement string
+        </member>
+        <member name="M:Lucene.Net.Analysis.Fr.FrenchStemmer.DeleteFrom(System.String,System.String[])">
+             Delete a search string within the source zone
+            
+             @param source the source zone for search
+             @param suffix the strings to search for suppression
+        </member>
+        <member name="M:Lucene.Net.Analysis.Fr.FrenchStemmer.IsVowel(System.Char)">
+             Test if a char is a french vowel, including accentuated ones
+            
+             @param ch the char to test
+             @return bool - true if the char is a vowel
+        </member>
+        <!-- Badly formed XML comment ignored for member "M:Lucene.Net.Analysis.Fr.FrenchStemmer.RetrieveR(System.Text.StringBuilder)" -->
+        <!-- Badly formed XML comment ignored for member "M:Lucene.Net.Analysis.Fr.FrenchStemmer.RetrieveRV(System.Text.StringBuilder)" -->
+        <!-- Badly formed XML comment ignored for member "M:Lucene.Net.Analysis.Fr.FrenchStemmer.TreatVowels(System.Text.StringBuilder)" -->
+        <member name="M:Lucene.Net.Analysis.Fr.FrenchStemmer.IsStemmable(System.String)">
+             Checks a term if it can be processed correctly.
+            
+             @return bool - true if, and only if, the given term consists in letters.
+        </member>
+        <member name="T:Lucene.Net.Analysis.Hunspell.HunspellAffix">
+            <summary>
+              Wrapper class representing a hunspell affix.
+            </summary>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Hunspell.HunspellAffix.CheckCondition(System.String)">
+            <summary>
+              Checks whether the String defined by the provided char array, offset 
+              and length, meets the condition of this affix.
+            </summary>
+            <returns>
+              <c>true</c> if the String meets the condition, <c>false</c> otherwise.
+            </returns>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Hunspell.HunspellAffix.SetCondition(System.String,System.String)">
+            <summary>
+              Sets the condition that must be met before the affix can be applied.
+            </summary>
+            <param name="condition">Condition to be met before affix application.</param>
+            <param name="pattern">Condition as a regular expression pattern.</param>
+        </member>
+        <member name="P:Lucene.Net.Analysis.Hunspell.HunspellAffix.Append">
+            <summary>
+              The append defined for the affix.
+            </summary>
+        </member>
+        <member name="P:Lucene.Net.Analysis.Hunspell.HunspellAffix.AppendFlags">
+            <summary>
+              The flags defined for the affix append.
+            </summary>
+        </member>
+        <member name="P:Lucene.Net.Analysis.Hunspell.HunspellAffix.Condition">
+            <summary>
+              The condition that must be met before the affix can be applied.
+            </summary>
+        </member>
+        <member name="P:Lucene.Net.Analysis.Hunspell.HunspellAffix.Flag">
+            <summary>
+              The affix flag.
+            </summary>
+        </member>
+        <member name="P:Lucene.Net.Analysis.Hunspell.HunspellAffix.IsCrossProduct">
+            <summary>
+              Whether the affix is defined as cross product.
+            </summary>
+        </member>
+        <member name="P:Lucene.Net.Analysis.Hunspell.HunspellAffix.Strip">
+            <summary>
+              The stripping characters defined for the affix.
+            </summary>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Hunspell.HunspellDictionary.#ctor(System.IO.Stream,System.IO.Stream)">
+            <summary>
+              Creates a new HunspellDictionary containing the information read from the provided streams to hunspell affix and dictionary file.
+            </summary>
+            <param name="affix">Stream for reading the hunspell affix file.</param>
+            <param name="dictionary">Stream for reading the hunspell dictionary file.</param>
+            <exception cref="T:System.IO.IOException">Can be thrown while reading from the streams.</exception>
+            <exception cref="T:System.IO.InvalidDataException">Can be thrown if the content of the files does not meet expected formats.</exception>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Hunspell.HunspellDictionary.#ctor(System.IO.Stream,System.Collections.Generic.IEnumerable{System.IO.Stream})">
+            <summary>
+              Creates a new HunspellDictionary containing the information read from the provided streams to hunspell affix and dictionary files.
+            </summary>
+            <param name="affix">Stream for reading the hunspell affix file.</param>
+            <param name="dictionaries">Streams for reading the hunspell dictionary file.</param>
+            <exception cref="T:System.IO.IOException">Can be thrown while reading from the streams.</exception>
+            <exception cref="T:System.IO.InvalidDataException">Can be thrown if the content of the files does not meet expected formats.</exception>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Hunspell.HunspellDictionary.LookupWord(System.String)">
+            <summary>
+              Looks up HunspellWords that match the String created from the given char array, offset and length.
+            </summary>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Hunspell.HunspellDictionary.LookupPrefix(System.Char[],System.Int32,System.Int32)">
+            <summary>
+              Looks up HunspellAffix prefixes that have an append that matches the String created from the given char array, offset and length.
+            </summary>
+            <param name="word">Char array to generate the String from.</param>
+            <param name="offset">Offset in the char array that the String starts at.</param>
+            <param name="length">Length from the offset that the String is.</param>
+            <returns>List of HunspellAffix prefixes with an append that matches the String, or <c>null</c> if none are found.</returns>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Hunspell.HunspellDictionary.LookupSuffix(System.Char[],System.Int32,System.Int32)">
+            <summary>
+              Looks up HunspellAffix suffixes that have an append that matches the String created from the given char array, offset and length.
+            </summary>
+            <param name="word">Char array to generate the String from.</param>
+            <param name="offset">Offset in the char array that the String starts at.</param>
+            <param name="length">Length from the offset that the String is.</param>
+            <returns>List of HunspellAffix suffixes with an append that matches the String, or <c>null</c> if none are found</returns>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Hunspell.HunspellDictionary.ReadAffixFile(System.IO.Stream,System.Text.Encoding)">
+            <summary>
+              Reads the affix file through the provided Stream, building up the prefix and suffix maps.
+            </summary>
+            <param name="affixStream">Stream to read the content of the affix file from.</param>
+            <param name="encoding">Encoding to decode the content of the file.</param>
+            <exception cref="T:System.IO.IOException">IOException Can be thrown while reading from the Stream.</exception>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Hunspell.HunspellDictionary.ParseAliasFlag(System.String,System.IO.TextReader)">
+            <summary>
+            Parse alias flag and put it in hash
+            </summary>
+            <param name="line"></param>
+            <param name="reader"></param>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Hunspell.HunspellDictionary.ParseAffix(System.Collections.Generic.Dictionary{System.String,System.Collections.Generic.List{Lucene.Net.Analysis.Hunspell.HunspellAffix}},System.String,System.IO.TextReader,System.String)">
+            <summary>
+              Parses a specific affix rule putting the result into the provided affix map.
+            </summary>
+            <param name="affixes">Map where the result of the parsing will be put.</param>
+            <param name="header">Header line of the affix rule.</param>
+            <param name="reader">TextReader to read the content of the rule from.</param>
+            <param name="conditionPattern">Pattern to be used to generate the condition regex pattern.</param>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Hunspell.HunspellDictionary.ReadDictionaryEncoding(System.IO.Stream)">
+            <summary>
+              Parses the encoding specificed in the affix file readable through the provided Stream.
+            </summary>
+            <param name="affix">Stream for reading the affix file.</param>
+            <returns>Encoding specified in the affix file.</returns>
+            <exception cref="T:System.IO.InvalidDataException">
+              Thrown if the first non-empty non-comment line read from the file does not
+              adhere to the format <c>SET encoding</c>.
+            </exception>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Hunspell.HunspellDictionary.GetFlagParsingStrategy(System.String)">
+            <summary>
+              Determines the appropriate {@link FlagParsingStrategy} based on the FLAG definiton line taken from the affix file.
+            </summary>
+            <param name="flagLine">Line containing the flag information</param>
+            <returns>FlagParsingStrategy that handles parsing flags in the way specified in the FLAG definition.</returns>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Hunspell.HunspellDictionary.ReadDictionaryFile(System.IO.Stream,System.Text.Encoding)">
+            <summary>
+              Reads the dictionary file through the provided Stream, building up the words map.
+            </summary>
+            <param name="dictionary">Stream to read the dictionary file through.</param>
+            <param name="encoding">Encoding used to decode the contents of the file.</param>
+            <exception cref="T:System.IO.IOException">Can be thrown while reading from the file.</exception>
+        </member>
+        <member name="T:Lucene.Net.Analysis.Hunspell.HunspellDictionary.DoubleASCIIFlagParsingStrategy">
+            <summary>
+              Implementation of {@link FlagParsingStrategy} that assumes each flag is encoded as
+              two ASCII characters whose codes must be combined into a single character.
+            </summary>
+        </member>
+        <member name="T:Lucene.Net.Analysis.Hunspell.HunspellDictionary.FlagParsingStrategy">
+            <summary>
+              Abstraction of the process of parsing flags taken from the affix and dic files
+            </summary>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Hunspell.HunspellDictionary.FlagParsingStrategy.ParseFlag(System.String)">
+            <summary>
+              Parses the given String into a single flag.
+            </summary>
+            <param name="rawFlag">String to parse into a flag.</param>
+            <returns>Parsed flag.</returns>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Hunspell.HunspellDictionary.FlagParsingStrategy.ParseFlags(System.String)">
+            <summary>
+              Parses the given String into multiple flag.
+            </summary>
+            <param name="rawFlags">String to parse into a flags.</param>
+            <returns>Parsed flags.</returns>
+        </member>
+        <member name="T:Lucene.Net.Analysis.Hunspell.HunspellDictionary.NumFlagParsingStrategy">
+            <summary>
+              Implementation of {@link FlagParsingStrategy} that assumes each flag is encoded in its
+              numerical form.  In the case of multiple flags, each number is separated by a comma.
+            </summary>
+        </member>
+        <member name="T:Lucene.Net.Analysis.Hunspell.HunspellDictionary.SimpleFlagParsingStrategy">
+            <summary>
+              Simple implementation of {@link FlagParsingStrategy} that treats the chars in each
+              String as a individual flags. Can be used with both the ASCII and UTF-8 flag types.
+            </summary>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Hunspell.HunspellStem.#ctor(System.String)">
+            <summary>
+              Creates a new Stem wrapping the given word stem.
+            </summary>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Hunspell.HunspellStem.AddPrefix(Lucene.Net.Analysis.Hunspell.HunspellAffix)">
+            <summary>
+              Adds a prefix to the list of prefixes used to generate this stem. Because it is 
+              assumed that prefixes are added depth first, the prefix is added to the front of 
+              the list.
+            </summary>
+            <param name="prefix">Prefix to add to the list of prefixes for this stem.</param>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Hunspell.HunspellStem.AddSuffix(Lucene.Net.Analysis.Hunspell.HunspellAffix)">
+            <summary>
+              Adds a suffix to the list of suffixes used to generate this stem. Because it
+              is assumed that suffixes are added depth first, the suffix is added to the end
+              of the list.
+            </summary>
+            <param name="suffix">Suffix to add to the list of suffixes for this stem.</param>
+        </member>
+        <member name="P:Lucene.Net.Analysis.Hunspell.HunspellStem.Stem">
+            <summary>
+              the actual word stem itself.
+            </summary>
+        </member>
+        <member name="P:Lucene.Net.Analysis.Hunspell.HunspellStem.StemLength">
+            <summary>
+              The stem length.
+            </summary>
+        </member>
+        <member name="P:Lucene.Net.Analysis.Hunspell.HunspellStem.Prefixes">
+            <summary>
+              The list of prefixes used to generate the stem.
+            </summary>
+        </member>
+        <member name="P:Lucene.Net.Analysis.Hunspell.HunspellStem.Suffixes">
+            <summary>
+              The list of suffixes used to generate the stem.
+            </summary>
+        </member>
+        <member name="T:Lucene.Net.Analysis.Hunspell.HunspellStemFilter">
+            <summary>
+              TokenFilter that uses hunspell affix rules and words to stem tokens.  Since hunspell supports a
+              word having multiple stems, this filter can emit multiple tokens for each consumed token.
+            </summary>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Hunspell.HunspellStemFilter.#ctor(Lucene.Net.Analysis.TokenStream,Lucene.Net.Analysis.Hunspell.HunspellDictionary,System.Boolean)">
+            <summary>
+              Creates a new HunspellStemFilter that will stem tokens from the given TokenStream using
+              affix rules in the provided HunspellDictionary.
+            </summary>
+            <param name="input">TokenStream whose tokens will be stemmed.</param>
+            <param name="dictionary">HunspellDictionary containing the affix rules and words that will be used to stem the tokens.</param>
+            <param name="dedup">true if only unique terms should be output.</param>
+        </member>
+        <member name="T:Lucene.Net.Analysis.Hunspell.HunspellStemmer">
+            <summary>
+              HunspellStemmer uses the affix rules declared in the HunspellDictionary to generate one or
+              more stems for a word.  It conforms to the algorithm in the original hunspell algorithm,
+              including recursive suffix stripping.
+            </summary>
+            <author>Chris Male</author>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Hunspell.HunspellStemmer.#ctor(Lucene.Net.Analysis.Hunspell.HunspellDictionary)">
+            <summary>
+              Constructs a new HunspellStemmer which will use the provided HunspellDictionary
+              to create its stems.
+            </summary>
+            <param name="dictionary">HunspellDictionary that will be used to create the stems.</param>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Hunspell.HunspellStemmer.Stem(System.String)">
+            <summary>
+              Find the stem(s) of the provided word.
+            </summary>
+            <param name="word">Word to find the stems for.</param>
+            <returns>List of stems for the word.</returns>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Hunspell.HunspellStemmer.UniqueStems(System.String)">
+            <summary>
+              Find the unique stem(s) of the provided word.
+            </summary>
+            <param name="word">Word to find the stems for.</param>
+            <returns>List of stems for the word.</returns>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Hunspell.HunspellStemmer.Stem(System.String,System.Char[],System.Int32)">
+            <summary>
+              Generates a list of stems for the provided word.
+            </summary>
+            <param name="word">Word to generate the stems for.</param>
+            <param name="flags">Flags from a previous stemming step that need to be cross-checked with any affixes in this recursive step.</param>
+            <param name="recursionDepth">Level of recursion this stemming step is at.</param>
+            <returns>List of stems, pr an empty if no stems are found.</returns>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Hunspell.HunspellStemmer.ApplyAffix(System.String,Lucene.Net.Analysis.Hunspell.HunspellAffix,System.Int32)">
+            <summary>
+              Applies the affix rule to the given word, producing a list of stems if any are found.
+            </summary>
+            <param name="strippedWord">Word the affix has been removed and the strip added.</param>
+            <param name="affix">HunspellAffix representing the affix rule itself.</param>
+            <param name="recursionDepth">Level of recursion this stemming step is at.</param>
+            <returns>List of stems for the word, or an empty list if none are found.</returns>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Hunspell.HunspellStemmer.HasCrossCheckedFlag(System.Char,System.Char[])">
+            <summary>
+              Checks if the given flag cross checks with the given array of flags.
+            </summary>
+            <param name="flag">Flag to cross check with the array of flags.</param>
+            <param name="flags">Array of flags to cross check against.  Can be <c>null</c>.</param>
+            <returns><c>true</c> if the flag is found in the array or the array is <c>null</c>, <c>false</c> otherwise.</returns>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Hunspell.HunspellWord.#ctor">
+            <summary>
+              Creates a new HunspellWord with no associated flags.
+            </summary>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Hunspell.HunspellWord.#ctor(System.Char[])">
+            <summary>
+              Constructs a new HunspellWord with the given flags.
+            </summary>
+            <param name="flags">Flags to associate with the word.</param>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Hunspell.HunspellWord.HasFlag(System.Char)">
+            <summary>
+              Checks whether the word has the given flag associated with it.
+            </summary>
+            <param name="flag">Flag to check whether it is associated with the word.</param>
+            <returns><c>true</c> if the flag is associated, <c>false</c> otherwise</returns>
+        </member>
+        <member name="T:Lucene.Net.Analysis.Miscellaneous.EmptyTokenStream">
+            <summary>
+            An always exhausted token stream
+            </summary>
+        </member>
+        <member name="T:Lucene.Net.Analysis.Miscellaneous.PrefixAwareTokenFilter">
+            <summary>
+            Joins two token streams and leaves the last token of the first stream available
+            to be used when updating the token values in the second stream based on that token.
+            
+            The default implementation adds last prefix token end offset to the suffix token start and end offsets.
+            <p/>
+            <b>NOTE:</b> This filter might not behave correctly if used with custom Attributes, i.e. Attributes other than
+            the ones located in Lucene.Net.Analysis.TokenAttributes. 
+            </summary>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Miscellaneous.PrefixAwareTokenFilter.UpdateSuffixToken(Lucene.Net.Analysis.Token,Lucene.Net.Analysis.Token)">
+            <summary>
+            The default implementation adds last prefix token end offset to the suffix token start and end offsets.
+            </summary>
+            <param name="suffixToken">a token from the suffix stream</param>
+            <param name="lastPrefixToken">the last token from the prefix stream</param>
+            <returns>consumer token</returns>
+        </member>
+        <!-- Badly formed XML comment ignored for member "T:Lucene.Net.Analysis.Miscellaneous.PatternAnalyzer" -->
+        <member name="F:Lucene.Net.Analysis.Miscellaneous.PatternAnalyzer.NON_WORD_PATTERN">
+            <code>"\\W+"</code>; Divides text at non-letters (NOT char.IsLetter(c)) 
+        </member>
+        <member name="F:Lucene.Net.Analysis.Miscellaneous.PatternAnalyzer.WHITESPACE_PATTERN">
+            <code>"\\s+"</code>; Divides text at whitespaces (char.IsWhitespace(c)) 
+        </member>
+        <member name="F:Lucene.Net.Analysis.Miscellaneous.PatternAnalyzer.DEFAULT_ANALYZER">
+            A lower-casing word analyzer with English stop words (can be shared
+            freely across threads without harm); global per class loader.
+        </member>
+        <member name="F:Lucene.Net.Analysis.Miscellaneous.PatternAnalyzer.EXTENDED_ANALYZER">
+            A lower-casing word analyzer with <b>extended </b> English stop words
+            (can be shared freely across threads without harm); global per class
+            loader. The stop words are borrowed from
+            http://thomas.loc.gov/home/stopwords.html, see
+            http://thomas.loc.gov/home/all.about.inquery.html
+        </member>
+        <member name="M:Lucene.Net.Analysis.Miscellaneous.PatternAnalyzer.#ctor(Lucene.Net.Util.Version,System.Text.RegularExpressions.Regex,System.Boolean,System.Collections.Generic.ISet{System.String})">
+            Constructs a new instance with the given parameters.
+            
+            @param matchVersion If >= {@link Version#LUCENE_29}, StopFilter.enablePositionIncrement is set to true
+            @param Regex
+                       a regular expression delimiting tokens
+            @param toLowerCase
+                       if <code>true</code> returns tokens after applying
+                       String.toLowerCase()
+            @param stopWords
+                       if non-null, ignores all tokens that are contained in the
+                       given stop set (after previously having applied toLowerCase()
+                       if applicable). For example, created via
+                       {@link StopFilter#makeStopSet(String[])}and/or
+                       {@link org.apache.lucene.analysis.WordlistLoader}as in
+                       <code>WordlistLoader.getWordSet(new File("samples/fulltext/stopwords.txt")</code>
+                       or <a href="http://www.unine.ch/info/clef/">other stop words
+                       lists </a>.
+        </member>
+        <member name="M:Lucene.Net.Analysis.Miscellaneous.PatternAnalyzer.TokenStream(System.String,System.String)">
+            Creates a token stream that tokenizes the given string into token terms
+            (aka words).
+            
+            @param fieldName
+                       the name of the field to tokenize (currently ignored).
+            @param text
+                       the string to tokenize
+            @return a new token stream
+        </member>
+        <member name="M:Lucene.Net.Analysis.Miscellaneous.PatternAnalyzer.TokenStream(System.String,System.IO.TextReader)">
+            Creates a token stream that tokenizes all the text in the given Reader;
+            This implementation forwards to <code>tokenStream(String, String)</code> and is
+            less efficient than <code>tokenStream(String, String)</code>.
+            
+            @param fieldName
+                       the name of the field to tokenize (currently ignored).
+            @param reader
+                       the reader delivering the text
+            @return a new token stream
+        </member>
+        <member name="M:Lucene.Net.Analysis.Miscellaneous.PatternAnalyzer.Equals(System.Object)">
+            Indicates whether some other object is "equal to" this one.
+            
+            @param other
+                       the reference object with which to compare.
+            @return true if equal, false otherwise
+        </member>
+        <member name="M:Lucene.Net.Analysis.Miscellaneous.PatternAnalyzer.GetHashCode">
+            Returns a hash code value for the object.
+            
+            @return the hash code.
+        </member>
+        <member name="M:Lucene.Net.Analysis.Miscellaneous.PatternAnalyzer.Eq(System.Object,System.Object)">
+            equality where o1 and/or o2 can be null 
+        </member>
+        <member name="M:Lucene.Net.Analysis.Miscellaneous.PatternAnalyzer.EqRegex(System.Text.RegularExpressions.Regex,System.Text.RegularExpressions.Regex)">
+            assumes p1 and p2 are not null 
+        </member>
+        <member name="M:Lucene.Net.Analysis.Miscellaneous.PatternAnalyzer.ToString(System.IO.TextReader)">
+            Reads until end-of-stream and returns all read chars, finally closes the stream.
+            
+            @param input the input stream
+            @throws IOException if an I/O error occurs while reading the stream
+        </member>
+        <member name="T:Lucene.Net.Analysis.Miscellaneous.PatternAnalyzer.RegexTokenizer">
+            The work horse; performance isn't fantastic, but it's not nearly as bad
+            as one might think - kudos to the Sun regex developers.
+        </member>
+        <member name="T:Lucene.Net.Analysis.Miscellaneous.PatternAnalyzer.FastStringTokenizer">
+            Special-case class for best performance in common cases; this class is
+            otherwise unnecessary.
+        </member>
+        <member name="T:Lucene.Net.Analysis.Miscellaneous.PatternAnalyzer.FastStringReader">
+            A StringReader that exposes it's contained string for fast direct access.
+            Might make sense to generalize this to CharSequence and make it public?
+        </member>
+        <member name="T:Lucene.Net.Analysis.Miscellaneous.PrefixAndSuffixAwareTokenFilter">
+            <summary>
+            Links two PrefixAwareTokenFilter.
+            <p/>
+            <b>NOTE:</b> This filter might not behave correctly if used with custom Attributes, i.e. Attributes other than
+            the ones located in Lucene.Net.Analysis.Tokenattributes.  
+            </summary>
+        </member>
+        <member name="T:Lucene.Net.Analysis.Miscellaneous.SingleTokenTokenStream">
+            <summary>
+            A TokenStream containing a single token.
+            </summary>
+        </member>
+        <member name="T:Lucene.Net.Analysis.NGram.Side">
+            <summary>
+            Specifies which side of the input the n-gram should be generated from
+            </summary>
+        </member>
+        <member name="T:Lucene.Net.Analysis.NGram.EdgeNGramTokenFilter">
+            Tokenizes the given token into n-grams of given size(s).
+            <p>
+            This <see cref="T:Lucene.Net.Analysis.TokenFilter"/> create n-grams from the beginning edge or ending edge of a input token.
+            </p>
+        </member>
+        <member name="M:Lucene.Net.Analysis.NGram.EdgeNGramTokenFilter.#ctor(Lucene.Net.Analysis.TokenStream,Lucene.Net.Analysis.NGram.Side,System.Int32,System.Int32)">
+             Creates EdgeNGramTokenFilter that can generate n-grams in the sizes of the given range
+            
+             <param name="input"><see cref="T:Lucene.Net.Analysis.TokenStream"/> holding the input to be tokenized</param>
+             <param name="side">the <see cref="T:Lucene.Net.Analysis.NGram.Side"/> from which to chop off an n-gram</param>
+             <param name="minGram">the smallest n-gram to generate</param>
+             <param name="maxGram">the largest n-gram to generate</param>
+        </member>
+        <member name="M:Lucene.Net.Analysis.NGram.EdgeNGramTokenFilter.#ctor(Lucene.Net.Analysis.TokenStream,System.String,System.Int32,System.Int32)">
+             Creates EdgeNGramTokenFilter that can generate n-grams in the sizes of the given range
+            
+             <param name="input"><see cref="T:Lucene.Net.Analysis.TokenStream"/> holding the input to be tokenized</param>
+             <param name="sideLabel">the name of the <see cref="T:Lucene.Net.Analysis.NGram.Side"/> from which to chop off an n-gram</param>
+             <param name="minGram">the smallest n-gram to generate</param>
+             <param name="maxGram">the largest n-gram to generate</param>
+        </member>
+        <member name="T:Lucene.Net.Analysis.NGram.EdgeNGramTokenizer">
+            Tokenizes the input from an edge into n-grams of given size(s).
+            <p>
+            This <see cref="T:Lucene.Net.Analysis.Tokenizer"/> create n-grams from the beginning edge or ending edge of a input token.
+            MaxGram can't be larger than 1024 because of limitation.
+            </p>
+        </member>
+        <member name="F:Lucene.Net.Analysis.NGram.EdgeNGramTokenizer.minGram">
+            Specifies which side of the input the n-gram should be generated from 
+        </member>
+        <member name="M:Lucene.Net.Analysis.NGram.EdgeNGramTokenizer.#ctor(System.IO.TextReader,Lucene.Net.Analysis.NGram.Side,System.Int32,System.Int32)">
+             Creates EdgeNGramTokenizer that can generate n-grams in the sizes of the given range
+            
+             <param name="input"><see cref="T:System.IO.TextReader"/> holding the input to be tokenized</param>
+             <param name="side">the <see cref="T:Lucene.Net.Analysis.NGram.Side"/> from which to chop off an n-gram</param>
+             <param name="minGram">the smallest n-gram to generate</param>
+             <param name="maxGram">the largest n-gram to generate</param>
+        </member>
+        <member name="M:Lucene.Net.Analysis.NGram.EdgeNGramTokenizer.#ctor(Lucene.Net.Util.AttributeSource,System.IO.TextReader,Lucene.Net.Analysis.NGram.Side,System.Int32,System.Int32)">
+             Creates EdgeNGramTokenizer that can generate n-grams in the sizes of the given range
+            
+             <param name="source"><see cref="T:Lucene.Net.Util.AttributeSource"/> to use</param>
+             <param name="input"><see cref="T:System.IO.TextReader"/> holding the input to be tokenized</param>
+             <param name="side">the <see cref="T:Lucene.Net.Analysis.NGram.Side"/> from which to chop off an n-gram</param>
+             <param name="minGram">the smallest n-gram to generate</param>
+             <param name="maxGram">the largest n-gram to generate</param>
+        </member>
+        <member name="M:Lucene.Net.Analysis.NGram.EdgeNGramTokenizer.#ctor(Lucene.Net.Util.AttributeSource.AttributeFactory,System.IO.TextReader,Lucene.Net.Analysis.NGram.Side,System.Int32,System.Int32)">
+            Creates EdgeNGramTokenizer that can generate n-grams in the sizes of the given range
+            
+            <param name="factory"><see cref="T:Lucene.Net.Util.AttributeSource.AttributeFactory"/> to use</param>
+            <param name="input"><see cref="T:System.IO.TextReader"/> holding the input to be tokenized</param>
+            <param name="side">the <see cref="T:Lucene.Net.Analysis.NGram.Side"/> from which to chop off an n-gram</param>
+            <param name="minGram">the smallest n-gram to generate</param>
+            <param name="maxGram">the largest n-gram to generate</param>
+        </member>
+        <member name="M:Lucene.Net.Analysis.NGram.EdgeNGramTokenizer.#ctor(System.IO.TextReader,System.String,System.Int32,System.Int32)">
+             Creates EdgeNGramTokenizer that can generate n-grams in the sizes of the given range
+            
+             <param name="input"><see cref="T:System.IO.TextReader"/> holding the input to be tokenized</param>
+             <param name="sideLabel">the name of the <see cref="T:Lucene.Net.Analysis.NGram.Side"/> from which to chop off an n-gram</param>
+             <param name="minGram">the smallest n-gram to generate</param>
+             <param name="maxGram">the largest n-gram to generate</param>
+        </member>
+        <member name="M:Lucene.Net.Analysis.NGram.EdgeNGramTokenizer.#ctor(Lucene.Net.Util.AttributeSource,System.IO.TextReader,System.String,System.Int32,System.Int32)">
+             Creates EdgeNGramTokenizer that can generate n-grams in the sizes of the given range
+            
+             <param name="source"><see cref="T:Lucene.Net.Util.AttributeSource"/> to use</param>
+             <param name="input"><see cref="T:System.IO.TextReader"/> holding the input to be tokenized</param>
+             <param name="sideLabel">the name of the <see cref="T:Lucene.Net.Analysis.NGram.Side"/> from which to chop off an n-gram</param>
+             <param name="minGram">the smallest n-gram to generate</param>
+             <param name="maxGram">the largest n-gram to generate</param>
+        </member>
+        <member name="M:Lucene.Net.Analysis.NGram.EdgeNGramTokenizer.#ctor(Lucene.Net.Util.AttributeSource.AttributeFactory,System.IO.TextReader,System.String,System.Int32,System.Int32)">
+            Creates EdgeNGramTokenizer that can generate n-grams in the sizes of the given range
+            
+            <param name="factory"><see cref="T:Lucene.Net.Util.AttributeSource.AttributeFactory"/> to use</param>
+            <param name="input"><see cref="T:System.IO.TextReader"/> holding the input to be tokenized</param>
+            <param name="sideLabel">the name of the <see cref="T:Lucene.Net.Analysis.NGram.Side"/> from which to chop off an n-gram</param>
+            <param name="minGram">the smallest n-gram to generate</param>
+            <param name="maxGram">the largest n-gram to generate</param>
+        </member>
+        <member name="M:Lucene.Net.Analysis.NGram.EdgeNGramTokenizer.IncrementToken">
+            Returns the next token in the stream, or null at EOS. 
+        </member>
+        <member name="T:Lucene.Net.Analysis.NGram.NGramTokenFilter">
+            Tokenizes the input into n-grams of the given size(s).
+        </member>
+        <member name="M:Lucene.Net.Analysis.NGram.NGramTokenFilter.#ctor(Lucene.Net.Analysis.TokenStream,System.Int32,System.Int32)">
+            Creates NGramTokenFilter with given min and max n-grams.
+            <param name="input"><see cref="T:Lucene.Net.Analysis.TokenStream"/> holding the input to be tokenized</param>
+            <param name="minGram">the smallest n-gram to generate</param>
+            <param name="maxGram">the largest n-gram to generate</param>
+        </member>
+        <member name="M:Lucene.Net.Analysis.NGram.NGramTokenFilter.#ctor(Lucene.Net.Analysis.TokenStream)">
+            Creates NGramTokenFilter with default min and max n-grams.
+            <param name="input"><see cref="T:Lucene.Net.Analysis.TokenStream"/> holding the input to be tokenized</param>
+        </member>
+        <member name="M:Lucene.Net.Analysis.NGram.NGramTokenFilter.IncrementToken">
+            Returns the next token in the stream, or null at EOS. 
+        </member>
+        <member name="T:Lucene.Net.Analysis.NGram.NGramTokenizer">
+            Tokenizes the input into n-grams of the given size(s).
+        </member>
+        <member name="M:Lucene.Net.Analysis.NGram.NGramTokenizer.#ctor(System.IO.TextReader,System.Int32,System.Int32)">
+            Creates NGramTokenizer with given min and max n-grams.
+            <param name="input"><see cref="T:System.IO.TextReader"/> holding the input to be tokenized</param>
+            <param name="minGram">the smallest n-gram to generate</param>
+            <param name="maxGram">the largest n-gram to generate</param>
+        </member>
+        <member name="M:Lucene.Net.Analysis.NGram.NGramTokenizer.#ctor(Lucene.Net.Util.AttributeSource,System.IO.TextReader,System.Int32,System.Int32)">
+            Creates NGramTokenizer with given min and max n-grams.
+            <param name="source"><see cref="T:Lucene.Net.Util.AttributeSource"/> to use</param>
+            <param name="input"><see cref="T:System.IO.TextReader"/> holding the input to be tokenized</param>
+            <param name="minGram">the smallest n-gram to generate</param>
+            <param name="maxGram">the largest n-gram to generate</param>
+        </member>
+        <member name="M:Lucene.Net.Analysis.NGram.NGramTokenizer.#ctor(Lucene.Net.Util.AttributeSource.AttributeFactory,System.IO.TextReader,System.Int32,System.Int32)">
+            Creates NGramTokenizer with given min and max n-grams.
+            <param name="factory"><see cref="T:Lucene.Net.Util.AttributeSource.AttributeFactory"/> to use</param>
+            <param name="input"><see cref="T:System.IO.TextReader"/> holding the input to be tokenized</param>
+            <param name="minGram">the smallest n-gram to generate</param>
+            <param name="maxGram">the largest n-gram to generate</param>
+        </member>
+        <member name="M:Lucene.Net.Analysis.NGram.NGramTokenizer.#ctor(System.IO.TextReader)">
+            Creates NGramTokenizer with default min and max n-grams.
+            <param name="input"><see cref="T:System.IO.TextReader"/> holding the input to be tokenized</param>
+        </member>
+        <member name="M:Lucene.Net.Analysis.NGram.NGramTokenizer.IncrementToken">
+            Returns the next token in the stream, or null at EOS. 
+        </member>
+        <member name="T:Lucene.Net.Analysis.Nl.DutchAnalyzer">
+             {@link Analyzer} for Dutch language. 
+             <p>
+             Supports an external list of stopwords (words that
+             will not be indexed at all), an external list of exclusions (word that will
+             not be stemmed, but indexed) and an external list of word-stem pairs that overrule
+             the algorithm (dictionary stemming).
+             A default set of stopwords is used unless an alternative list is specified, but the
+             exclusion list is empty by default.
+             </p>
+            
+             <p><b>NOTE</b>: This class uses the same {@link Version}
+             dependent settings as {@link StandardAnalyzer}.</p>
+        </member>
+        <member name="F:Lucene.Net.Analysis.Nl.DutchAnalyzer.DUTCH_STOP_WORDS">
+            List of typical Dutch stopwords.
+            @deprecated use {@link #getDefaultStopSet()} instead
+        </member>
+        <member name="M:Lucene.Net.Analysis.Nl.DutchAnalyzer.getDefaultStopSet">
+            Returns an unmodifiable instance of the default stop-words set.
+            @return an unmodifiable instance of the default stop-words set.
+        </member>
+        <member name="F:Lucene.Net.Analysis.Nl.DutchAnalyzer.stoptable">
+            Contains the stopwords used with the StopFilter.
+        </member>
+        <member name="F:Lucene.Net.Analysis.Nl.DutchAnalyzer.excltable">
+            Contains words that should be indexed but not stemmed.
+        </member>
+        <member name="M:Lucene.Net.Analysis.Nl.DutchAnalyzer.#ctor(Lucene.Net.Util.Version)">
+            Builds an analyzer with the default stop words ({@link #DUTCH_STOP_WORDS}) 
+            and a few default entries for the stem exclusion table.
+            
+        </member>
+        <member name="M:Lucene.Net.Analysis.Nl.DutchAnalyzer.#ctor(Lucene.Net.Util.Version,System.String[])">
+             Builds an analyzer with the given stop words.
+            
+             @param matchVersion
+             @param stopwords
+             @deprecated use {@link #DutchAnalyzer(Version, Set)} instead
+        </member>
+        <member name="M:Lucene.Net.Analysis.Nl.DutchAnalyzer.#ctor(Lucene.Net.Util.Version,System.Collections.Generic.HashSet{System.String})">
+             Builds an analyzer with the given stop words.
+            
+             @param stopwords
+             @deprecated use {@link #DutchAnalyzer(Version, Set)} instead
+        </member>
+        <member name="M:Lucene.Net.Analysis.Nl.DutchAnalyzer.#ctor(Lucene.Net.Util.Version,System.IO.FileInfo)">
+             Builds an analyzer with the given stop words.
+            
+             @param stopwords
+             @deprecated use {@link #DutchAnalyzer(Version, Set)} instead
+        </member>
+        <member name="M:Lucene.Net.Analysis.Nl.DutchAnalyzer.SetStemExclusionTable(System.String[])">
+             Builds an exclusionlist from an array of Strings.
+            
+             @param exclusionlist
+             @deprecated use {@link #DutchAnalyzer(Version, Set, Set)} instead
+        </member>
+        <member name="M:Lucene.Net.Analysis.Nl.DutchAnalyzer.SetStemExclusionTable(System.Collections.Generic.ISet{System.String})">
+            Builds an exclusionlist from a Hashtable.
+            @deprecated use {@link #DutchAnalyzer(Version, Set, Set)} instead
+        </member>
+        <member name="M:Lucene.Net.Analysis.Nl.DutchAnalyzer.SetStemExclusionTable(System.IO.FileInfo)">
+            Builds an exclusionlist from the words contained in the given file.
+            @deprecated use {@link #DutchAnalyzer(Version, Set, Set)} instead
+        </member>
+        <member name="M:Lucene.Net.Analysis.Nl.DutchAnalyzer.SetStemDictionary(System.IO.FileInfo)">
+            Reads a stemdictionary file , that overrules the stemming algorithm
+            This is a textfile that contains per line
+            <tt>word<b>\t</b>stem</tt>, i.e: two tab seperated words
+        </member>
+        <member name="M:Lucene.Net.Analysis.Nl.DutchAnalyzer.TokenStream(System.String,System.IO.TextReader)">
+             Creates a {@link TokenStream} which tokenizes all the text in the 
+             provided {@link Reader}.
+            
+             @return A {@link TokenStream} built from a {@link StandardTokenizer}
+               filtered with {@link StandardFilter}, {@link StopFilter}, 
+               and {@link DutchStemFilter}
+        </member>
+        <member name="M:Lucene.Net.Analysis.Nl.DutchAnalyzer.ReusableTokenStream(System.String,System.IO.TextReader)">
+             Returns a (possibly reused) {@link TokenStream} which tokenizes all the 
+             text in the provided {@link Reader}.
+            
+             @return A {@link TokenStream} built from a {@link StandardTokenizer}
+               filtered with {@link StandardFilter}, {@link StopFilter}, 
+               and {@link DutchStemFilter}
+        </member>
+        <member name="T:Lucene.Net.Analysis.Nl.DutchStemFilter">
+            A {@link TokenFilter} that stems Dutch words. 
+            <p>
+            It supports a table of words that should
+            not be stemmed at all. The stemmer used can be changed at runtime after the
+            filter object is created (as long as it is a {@link DutchStemmer}).
+            </p>
+            NOTE: This stemmer does not implement the Snowball algorithm correctly,
+            specifically doubled consonants. It is recommended that you consider using
+            the "Dutch" stemmer in the snowball package instead. This stemmer will likely
+            be deprecated in a future release.
+        </member>
+        <member name="F:Lucene.Net.Analysis.Nl.DutchStemFilter.stemmer">
+            The actual token in the input stream.
+        </member>
+        <member name="M:Lucene.Net.Analysis.Nl.DutchStemFilter.#ctor(Lucene.Net.Analysis.TokenStream,System.Collections.Generic.ISet{System.String})">
+            Builds a DutchStemFilter that uses an exclusion table.
+        </member>
+        <member name="M:Lucene.Net.Analysis.Nl.DutchStemFilter.#ctor(Lucene.Net.Analysis.TokenStream,System.Collections.Generic.ISet{System.String},System.Collections.Generic.IDictionary{System.String,System.String})">
+            @param stemdictionary Dictionary of word stem pairs, that overrule the algorithm
+        </member>
+        <member name="M:Lucene.Net.Analysis.Nl.DutchStemFilter.IncrementToken">
+            Returns the next token in the stream, or null at EOS
+        </member>
+        <member name="M:Lucene.Net.Analysis.Nl.DutchStemFilter.SetStemmer(Lucene.Net.Analysis.Nl.DutchStemmer)">
+            Set a alternative/custom {@link DutchStemmer} for this filter.
+        </member>
+        <member name="M:Lucene.Net.Analysis.Nl.DutchStemFilter.SetExclusionTable(System.Collections.Generic.ISet{System.String})">
+            Set an alternative exclusion list for this filter.
+        </member>
+        <member name="M:Lucene.Net.Analysis.Nl.DutchStemFilter.SetStemDictionary(System.Collections.Generic.IDictionary{System.String,System.String})">
+            Set dictionary for stemming, this dictionary overrules the algorithm,
+            so you can correct for a particular unwanted word-stem pair.
+        </member>
+        <member name="T:Lucene.Net.Analysis.Nl.DutchStemmer">
+            A stemmer for Dutch words. 
+            <p>
+            The algorithm is an implementation of
+            the <a href="http://snowball.tartarus.org/algorithms/dutch/stemmer.html">dutch stemming</a>
+            algorithm in Martin Porter's snowball project.
+            </p>
+        </member>
+        <member name="F:Lucene.Net.Analysis.Nl.DutchStemmer.sb">
+            Buffer for the terms while stemming them.
+        </member>
+        <member name="M:Lucene.Net.Analysis.Nl.DutchStemmer.step2(System.Text.StringBuilder)">
+             Remove suffix e if in R1 and
+             preceded by a non-vowel, and then undouble the ending
+            
+             @param sb String being stemmed
+        </member>
+        <member name="M:Lucene.Net.Analysis.Nl.DutchStemmer.step3a(System.Text.StringBuilder)">
+             Remove "heid"
+            
+             @param sb String being stemmed
+        </member>
+        <member name="M:Lucene.Net.Analysis.Nl.DutchStemmer.step3b(System.Text.StringBuilder)">
+             <p>A d-suffix, or derivational suffix, enables a new word,
+             often with a different grammatical category, or with a different
+             sense, to be built from another word. Whether a d-suffix can be
+             attached is discovered not from the rules of grammar, but by
+             referring to a dictionary. So in English, ness can be added to
+             certain adjectives to form corresponding nouns (littleness,
+             kindness, foolishness ...) but not to all adjectives
+             (not for example, to big, cruel, wise ...) d-suffixes can be
+             used to change meaning, often in rather exotic ways.</p>
+             Remove "ing", "end", "ig", "lijk", "baar" and "bar"
+            
+             @param sb String being stemmed
+        </member>
+        <member name="M:Lucene.Net.Analysis.Nl.DutchStemmer.step4(System.Text.StringBuilder)">
+             undouble vowel
+             If the words ends CVD, where C is a non-vowel, D is a non-vowel other than I, and V is double a, e, o or u, remove one of the vowels from V (for example, maan -> man, brood -> brod).
+            
+             @param sb String being stemmed
+        </member>
+        <member name="M:Lucene.Net.Analysis.Nl.DutchStemmer.isStemmable(System.String)">
+             Checks if a term could be stemmed.
+            
+             @return true if, and only if, the given term consists in letters.
+        </member>
+        <member name="M:Lucene.Net.Analysis.Nl.DutchStemmer.substitute(System.Text.StringBuilder)">
+            Substitute Ã¤, Ã«, Ã¯, Ã¶, Ã¼, Ã¡ , Ã©, Ã­, Ã³, Ãº
+        </member>
+        <member name="T:Lucene.Net.Analysis.Payloads.AbstractEncoder">
+            <summary>
+            Base class for payload encoders.
+            </summary>
+        </member>
+        <member name="T:Lucene.Net.Analysis.Payloads.PayloadEncoder">
+            <summary>
+            Mainly for use with the DelimitedPayloadTokenFilter, converts char buffers to Payload
+            <p/>
+            NOTE: this interface is subject to change
+            </summary>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Payloads.PayloadEncoder.Encode(System.Char[],System.Int32,System.Int32)">
+            <summary>
+            Convert a char array to a <see cref="T:Lucene.Net.Index.Payload"/>
+            </summary>
+            <returns>An encoded <see cref="T:Lucene.Net.Index.Payload"/></returns>
+        </member>
+        <member name="T:Lucene.Net.Analysis.Payloads.DelimitedPayloadTokenFilter">
+            <summary>
+            Characters before the delimiter are the "token", those after are the payload.
+            <p/>
+            For example, if the delimiter is '|', then for the string "foo|bar", foo is the token
+            and "bar" is a payload.
+            <p/>
+            Note, you can also include a {@link org.apache.lucene.analysis.payloads.PayloadEncoder} to convert the 
+            payload in an appropriate way (from characters to bytes).
+            <p/>
+            Note make sure your Tokenizer doesn't split on the delimiter, or this won't work
+            </summary>
+            <seealso cref="T:Lucene.Net.Analysis.Payloads.PayloadEncoder"/>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Payloads.DelimitedPayloadTokenFilter.#ctor(Lucene.Net.Analysis.TokenStream)">
+            <summary>
+            Construct a token stream filtering the given input.
+            </summary>
+        </member>
+        <member name="T:Lucene.Net.Analysis.Payloads.FloatEncoder">
+            <summary>
+            Encode a character array Float as a {@link org.apache.lucene.index.Payload}.
+            </summary>
+            <seealso cref="M:Lucene.Net.Analysis.Payloads.PayloadHelper.EncodeFloat(System.Single,System.Byte[],System.Int32)"/>
+        </member>
+        <member name="T:Lucene.Net.Analysis.Payloads.IdentityEncoder">
+            <summary>
+            Does nothing other than convert the char array to a byte array using the specified encoding.
+            </summary>
+        </member>
+        <member name="T:Lucene.Net.Analysis.Payloads.IntegerEncoder">
+            <summary>
+            Encode a character array Integer as a {@link org.apache.lucene.index.Payload}.
+            </summary>
+            <seealso cref="M:Lucene.Net.Analysis.Payloads.PayloadHelper.EncodeInt(System.Int32,System.Byte[],System.Int32)"/>
+        </member>
+        <member name="T:Lucene.Net.Analysis.Payloads.NumericPayloadTokenFilter">
+            <summary>
+            Assigns a payload to a token based on the <see cref="P:Lucene.Net.Analysis.Token.Type"/>
+            </summary>
+        </member>
+        <member name="T:Lucene.Net.Analysis.Payloads.PayloadHelper">
+            <summary>
+            Utility methods for encoding payloads.
+            </summary>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Payloads.PayloadHelper.DecodeFloat(System.Byte[])">
+            <summary>
+            <p>Decode the payload that was encoded using encodeFloat(float)</p>
+            <p>NOTE: the length of the array must be at least offset + 4 long.</p>
+            </summary>
+            <param name="bytes">The bytes to decode</param>
+            <returns>the decoded float</returns>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Payloads.PayloadHelper.DecodeFloat(System.Byte[],System.Int32)">
+            <summary>
+            <p>Decode the payload that was encoded using encodeFloat(float)</p>
+            <p>NOTE: the length of the array must be at least offset + 4 long.</p>
+            </summary>
+            <param name="bytes">The bytes to decode</param>
+            <param name="offset">The offset into the array.</param>
+            <returns>The float that was encoded</returns>
+        </member>
+        <member name="T:Lucene.Net.Analysis.Payloads.TokenOffsetPayloadTokenFilter">
+            <summary>
+            Adds the <see cref="!:Token.SetStartOffset(int)"/>
+            and <see cref="!:Token.SetEndOffset(int)"/>
+            First 4 bytes are the start
+            </summary>
+        </member>
+        <member name="T:Lucene.Net.Analysis.Payloads.TypeAsPayloadTokenFilter">
+            <summary>
+            Makes the Token.Type() a payload.
+            Encodes the type using <see cref="P:System.Text.Encoding.UTF8"/> as the encoding
+            </summary>
+        </member>
+        <member name="T:Lucene.Net.Analysis.Position.PositionFilter">
+            Set the positionIncrement of all tokens to the "positionIncrement",
+            except the first return token which retains its original positionIncrement value.
+            The default positionIncrement value is zero.
+        </member>
+        <member name="F:Lucene.Net.Analysis.Position.PositionFilter.positionIncrement">
+            Position increment to assign to all but the first token - default = 0 
+        </member>
+        <member name="F:Lucene.Net.Analysis.Position.PositionFilter.firstTokenPositioned">
+            The first token must have non-zero positionIncrement *
+        </member>
+        <member name="M:Lucene.Net.Analysis.Position.PositionFilter.#ctor(Lucene.Net.Analysis.TokenStream)">
+            Constructs a PositionFilter that assigns a position increment of zero to
+            all but the first token from the given input stream.
+            
+            @param input the input stream
+        </member>
+        <member name="M:Lucene.Net.Analysis.Position.PositionFilter.#ctor(Lucene.Net.Analysis.TokenStream,System.Int32)">
+            Constructs a PositionFilter that assigns the given position increment to
+            all but the first token from the given input stream.
+            
+            @param input the input stream
+            @param positionIncrement position increment to assign to all but the first
+             token from the input stream
+        </member>
+        <member name="T:Lucene.Net.Analysis.Query.QueryAutoStopWordAnalyzer">
+            An {@link Analyzer} used primarily at query time to wrap another analyzer and provide a layer of protection
+            which prevents very common words from being passed into queries. 
+            <p>
+            For very large indexes the cost
+            of reading TermDocs for a very common word can be  high. This analyzer was created after experience with
+            a 38 million doc index which had a term in around 50% of docs and was causing TermQueries for 
+            this term to take 2 seconds.
+            </p>
+            <p>
+            Use the various "addStopWords" methods in this class to automate the identification and addition of 
+            stop words found in an already existing index.
+            </p>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Query.QueryAutoStopWordAnalyzer.#ctor(Lucene.Net.Util.Version,Lucene.Net.Analysis.Analyzer)">
+             Initializes this analyzer with the Analyzer object that actually produces the tokens
+            
+             @param _delegate The choice of {@link Analyzer} that is used to produce the token stream which needs filtering
+        </member>
+        <member name="M:Lucene.Net.Analysis.Query.QueryAutoStopWordAnalyzer.AddStopWords(Lucene.Net.Index.IndexReader)">
+             Automatically adds stop words for all fields with terms exceeding the defaultMaxDocFreqPercent
+            
+             @param reader The {@link IndexReader} which will be consulted to identify potential stop words that
+                           exceed the required document frequency
+             @return The number of stop words identified.
+             @throws IOException
+        </member>
+        <member name="M:Lucene.Net.Analysis.Query.QueryAutoStopWordAnalyzer.AddStopWords(Lucene.Net.Index.IndexReader,System.Int32)">
+             Automatically adds stop words for all fields with terms exceeding the maxDocFreqPercent
+            
+             @param reader     The {@link IndexReader} which will be consulted to identify potential stop words that
+                               exceed the required document frequency
+             @param maxDocFreq The maximum number of index documents which can contain a term, after which
+                               the term is considered to be a stop word
+             @return The number of stop words identified.
+             @throws IOException
+        </member>
+        <member name="M:Lucene.Net.Analysis.Query.QueryAutoStopWordAnalyzer.AddStopWords(Lucene.Net.Index.IndexReader,System.Single)">
+             Automatically adds stop words for all fields with terms exceeding the maxDocFreqPercent
+            
+             @param reader        The {@link IndexReader} which will be consulted to identify potential stop words that
+                                  exceed the required document frequency
+             @param maxPercentDocs The maximum percentage (between 0.0 and 1.0) of index documents which
+                                  contain a term, after which the word is considered to be a stop word.
+             @return The number of stop words identified.
+             @throws IOException
+        </member>
+        <member name="M:Lucene.Net.Analysis.Query.QueryAutoStopWordAnalyzer.AddStopWords(Lucene.Net.Index.IndexReader,System.String,System.Single)">
+             Automatically adds stop words for the given field with terms exceeding the maxPercentDocs
+            
+             @param reader         The {@link IndexReader} which will be consulted to identify potential stop words that
+                                   exceed the required document frequency
+             @param fieldName      The field for which stopwords will be added
+             @param maxPercentDocs The maximum percentage (between 0.0 and 1.0) of index documents which
+                                   contain a term, after which the word is considered to be a stop word.
+             @return The number of stop words identified.
+             @throws IOException
+        </member>
+        <member name="M:Lucene.Net.Analysis.Query.QueryAutoStopWordAnalyzer.AddStopWords(Lucene.Net.Index.IndexReader,System.String,System.Int32)">
+             Automatically adds stop words for the given field with terms exceeding the maxPercentDocs
+            
+             @param reader     The {@link IndexReader} which will be consulted to identify potential stop words that
+                               exceed the required document frequency
+             @param fieldName  The field for which stopwords will be added
+             @param maxDocFreq The maximum number of index documents which
+                               can contain a term, after which the term is considered to be a stop word.
+             @return The number of stop words identified.
+             @throws IOException
+        </member>
+        <member name="M:Lucene.Net.Analysis.Query.QueryAutoStopWordAnalyzer.GetStopWords(System.String)">
+             Provides information on which stop words have been identified for a field
+            
+             @param fieldName The field for which stop words identified in "addStopWords"
+                              method calls will be returned
+             @return the stop words identified for a field
+        </member>
+        <member name="M:Lucene.Net.Analysis.Query.QueryAutoStopWordAnalyzer.GetStopWords">
+             Provides information on which stop words have been identified for all fields
+            
+             @return the stop words (as terms)
+        </member>
+        <member name="T:Lucene.Net.Analysis.Reverse.ReverseStringFilter">
+            Reverse token string, for example "country" => "yrtnuoc".
+            <p>
+            If <code>marker</code> is supplied, then tokens will be also prepended by
+            that character. For example, with a marker of &#x5C;u0001, "country" =>
+            "&#x5C;u0001yrtnuoc". This is useful when implementing efficient leading
+            wildcards search.
+            </p>
+        </member>
+        <member name="F:Lucene.Net.Analysis.Reverse.ReverseStringFilter.START_OF_HEADING_MARKER">
+            Example marker character: U+0001 (START OF HEADING) 
+        </member>
+        <member name="F:Lucene.Net.Analysis.Reverse.ReverseStringFilter.INFORMATION_SEPARATOR_MARKER">
+            Example marker character: U+001F (INFORMATION SEPARATOR ONE)
+        </member>
+        <member name="F:Lucene.Net.Analysis.Reverse.ReverseStringFilter.PUA_EC00_MARKER">
+            Example marker character: U+EC00 (PRIVATE USE AREA: EC00) 
+        </member>
+        <member name="F:Lucene.Net.Analysis.Reverse.ReverseStringFilter.RTL_DIRECTION_MARKER">
+            Example marker character: U+200F (RIGHT-TO-LEFT MARK)
+        </member>
+        <member name="M:Lucene.Net.Analysis.Reverse.ReverseStringFilter.#ctor(Lucene.Net.Analysis.TokenStream)">
+            Create a new ReverseStringFilter that reverses all tokens in the 
+            supplied {@link TokenStream}.
+            <p>
+            The reversed tokens will not be marked. 
+            </p>
+            
+            @param in {@link TokenStream} to filter
+        </member>
+        <member name="M:Lucene.Net.Analysis.Reverse.ReverseStringFilter.#ctor(Lucene.Net.Analysis.TokenStream,System.Char)">
+            Create a new ReverseStringFilter that reverses and marks all tokens in the
+            supplied {@link TokenStream}.
+            <p>
+            The reversed tokens will be prepended (marked) by the <code>marker</code>
+            character.
+            </p>
+            
+            @param in {@link TokenStream} to filter
+            @param marker A character used to mark reversed tokens
+        </member>
+        <member name="T:Lucene.Net.Analysis.Ru.RussianAnalyzer">
+            <summary>
+            Analyzer for Russian language. Supports an external list of stopwords (words that
+            will not be indexed at all).
+            A default set of stopwords is used unless an alternative list is specified.
+            </summary>
+        </member>
+        <member name="F:Lucene.Net.Analysis.Ru.RussianAnalyzer.RUSSIAN_STOP_WORDS">
+            <summary>
+            List of typical Russian stopwords.
+            </summary>
+        </member>
+        <member name="F:Lucene.Net.Analysis.Ru.RussianAnalyzer.stopSet">
+            <summary>
+            Contains the stopwords used with the StopFilter.
+            </summary>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Ru.RussianAnalyzer.#ctor(Lucene.Net.Util.Version,System.String[])">
+            Builds an analyzer with the given stop words.
+            @deprecated use {@link #RussianAnalyzer(Version, Set)} instead
+        </member>
+        <member name="M:Lucene.Net.Analysis.Ru.RussianAnalyzer.#ctor(Lucene.Net.Util.Version,System.Collections.Generic.ISet{System.String})">
+            Builds an analyzer with the given stop words
+            
+            @param matchVersion
+                     lucene compatibility version
+            @param stopwords
+                     a stopword set
+        </member>
+        <member name="M:Lucene.Net.Analysis.Ru.RussianAnalyzer.#ctor(Lucene.Net.Util.Version,System.Collections.Generic.IDictionary{System.String,System.String})">
+            Builds an analyzer with the given stop words.
+            TODO: create a Set version of this ctor
+            @deprecated use {@link #RussianAnalyzer(Version, Set)} instead
+        </member>
+        <member name="M:Lucene.Net.Analysis.Ru.RussianAnalyzer.TokenStream(System.String,System.IO.TextReader)">
+             Creates a {@link TokenStream} which tokenizes all the text in the 
+             provided {@link Reader}.
+            
+             @return  A {@link TokenStream} built from a 
+               {@link RussianLetterTokenizer} filtered with 
+               {@link RussianLowerCaseFilter}, {@link StopFilter}, 
+               and {@link RussianStemFilter}
+        </member>
+        <member name="M:Lucene.Net.Analysis.Ru.RussianAnalyzer.ReusableTokenStream(System.String,System.IO.TextReader)">
+             Returns a (possibly reused) {@link TokenStream} which tokenizes all the text 
+             in the provided {@link Reader}.
+            
+             @return  A {@link TokenStream} built from a 
+               {@link RussianLetterTokenizer} filtered with 
+               {@link RussianLowerCaseFilter}, {@link StopFilter}, 
+               and {@link RussianStemFilter}
+        </member>
+        <member name="T:Lucene.Net.Analysis.Ru.RussianLetterTokenizer">
+            <summary>
+             A RussianLetterTokenizer is a {@link Tokenizer} that extends {@link LetterTokenizer}
+             by also allowing the basic latin digits 0-9. 
+            </summary>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Ru.RussianLetterTokenizer.IsTokenChar(System.Char)">
+            Collects only characters which satisfy
+            {@link Character#isLetter(char)}.
+        </member>
+        <member name="T:Lucene.Net.Analysis.Ru.RussianLowerCaseFilter">
+            <summary>
+            Normalizes token text to lower case.
+            </summary>
+        </member>
+        <member name="T:Lucene.Net.Analysis.Ru.RussianStemFilter">
+            A {@link TokenFilter} that stems Russian words. 
+            <p>
+            The implementation was inspired by GermanStemFilter.
+            The input should be filtered by {@link LowerCaseFilter} before passing it to RussianStemFilter ,
+            because RussianStemFilter only works with lowercase characters.
+            </p>
+        </member>
+        <member name="F:Lucene.Net.Analysis.Ru.RussianStemFilter.stemmer">
+            The actual token in the input stream.
+        </member>
+        <member name="M:Lucene.Net.Analysis.Ru.RussianStemFilter.IncrementToken">
+            Returns the next token in the stream, or null at EOS
+        </member>
+        <member name="T:Lucene.Net.Analysis.Ru.RussianStemmer">
+            Russian stemming algorithm implementation (see http://snowball.sourceforge.net for detailed description).
+        </member>
+        <member name="M:Lucene.Net.Analysis.Ru.RussianStemmer.#ctor">
+            RussianStemmer constructor comment.
+        </member>
+        <member name="M:Lucene.Net.Analysis.Ru.RussianStemmer.adjectival(System.Text.StringBuilder)">
+            Adjectival ending is an adjective ending,
+            optionally preceded by participle ending.
+            Creation date: (17/03/2002 12:14:58 AM)
+            @param stemmingZone java.lang.StringBuilder
+        </member>
+        <member name="M:Lucene.Net.Analysis.Ru.RussianStemmer.derivational(System.Text.StringBuilder)">
+            Derivational endings
+            Creation date: (17/03/2002 12:14:58 AM)
+            @param stemmingZone java.lang.StringBuilder
+        </member>
+        <member name="M:Lucene.Net.Analysis.Ru.RussianStemmer.findEnding(System.Text.StringBuilder,System.Int32,System.Char[][])">
+            Finds ending among given ending class and returns the length of ending found(0, if not found).
+            Creation date: (17/03/2002 8:18:34 PM)
+        </member>
+        <member name="M:Lucene.Net.Analysis.Ru.RussianStemmer.findAndRemoveEnding(System.Text.StringBuilder,System.Char[][])">
+            Finds the ending among the given class of endings and removes it from stemming zone.
+            Creation date: (17/03/2002 8:18:34 PM)
+        </member>
+        <member name="M:Lucene.Net.Analysis.Ru.RussianStemmer.findAndRemoveEnding(System.Text.StringBuilder,System.Char[][],System.Char[][])">
+            Finds the ending among the given class of endings, then checks if this ending was
+            preceded by any of given predecessors, and if so, removes it from stemming zone.
+            Creation date: (17/03/2002 8:18:34 PM)
+        </member>
+        <member name="M:Lucene.Net.Analysis.Ru.RussianStemmer.markPositions(System.String)">
+            Marks positions of RV, R1 and R2 in a given word.
+            Creation date: (16/03/2002 3:40:11 PM)
+        </member>
+        <member name="M:Lucene.Net.Analysis.Ru.RussianStemmer.isVowel(System.Char)">
+            Checks if character is a vowel..
+            Creation date: (16/03/2002 10:47:03 PM)
+            @return bool
+            @param letter char
+        </member>
+        <member name="M:Lucene.Net.Analysis.Ru.RussianStemmer.noun(System.Text.StringBuilder)">
+            Noun endings.
+            Creation date: (17/03/2002 12:14:58 AM)
+            @param stemmingZone java.lang.StringBuilder
+        </member>
+        <member name="M:Lucene.Net.Analysis.Ru.RussianStemmer.perfectiveGerund(System.Text.StringBuilder)">
+            Perfective gerund endings.
+            Creation date: (17/03/2002 12:14:58 AM)
+            @param stemmingZone java.lang.StringBuilder
+        </member>
+        <member name="M:Lucene.Net.Analysis.Ru.RussianStemmer.reflexive(System.Text.StringBuilder)">
+            Reflexive endings.
+            Creation date: (17/03/2002 12:14:58 AM)
+            @param stemmingZone java.lang.StringBuilder
+        </member>
+        <member name="M:Lucene.Net.Analysis.Ru.RussianStemmer.removeI(System.Text.StringBuilder)">
+            Insert the method's description here.
+            Creation date: (17/03/2002 12:14:58 AM)
+            @param stemmingZone java.lang.StringBuilder
+        </member>
+        <member name="M:Lucene.Net.Analysis.Ru.RussianStemmer.removeSoft(System.Text.StringBuilder)">
+            Insert the method's description here.
+            Creation date: (17/03/2002 12:14:58 AM)
+            @param stemmingZone java.lang.StringBuilder
+        </member>
+        <member name="M:Lucene.Net.Analysis.Ru.RussianStemmer.Stem(System.String)">
+            Finds the stem for given Russian word.
+            Creation date: (16/03/2002 3:36:48 PM)
+            @return java.lang.String
+            @param input java.lang.String
+        </member>
+        <member name="M:Lucene.Net.Analysis.Ru.RussianStemmer.Superlative(System.Text.StringBuilder)">
+            Superlative endings.
+            Creation date: (17/03/2002 12:14:58 AM)
+            @param stemmingZone java.lang.StringBuilder
+        </member>
+        <member name="M:Lucene.Net.Analysis.Ru.RussianStemmer.UndoubleN(System.Text.StringBuilder)">
+            Undoubles N.
+            Creation date: (17/03/2002 12:14:58 AM)
+            @param stemmingZone java.lang.StringBuilder
+        </member>
+        <member name="M:Lucene.Net.Analysis.Ru.RussianStemmer.Verb(System.Text.StringBuilder)">
+            Verb endings.
+            Creation date: (17/03/2002 12:14:58 AM)
+            @param stemmingZone java.lang.StringBuilder
+        </member>
+        <member name="M:Lucene.Net.Analysis.Ru.RussianStemmer.StemWord(System.String)">
+            Static method for stemming.
+        </member>
+        <member name="T:Lucene.Net.Analysis.Shingle.Matrix.Matrix">
+            <summary>
+            A column focused matrix in three dimensions:
+            
+            <pre>
+            Token[column][row][z-axis] {
+                {{hello}, {greetings, and, salutations}},
+                {{world}, {earth}, {tellus}}
+            };
+            </pre>
+            
+            todo consider row groups
+            to indicate that shingles is only to contain permutations with texts in that same row group.
+            </summary>
+        </member>
+        <member name="T:Lucene.Net.Analysis.Shingle.ShingleAnalyzerWrapper">
+            A ShingleAnalyzerWrapper wraps a {@link ShingleFilter} around another {@link Analyzer}.
+            <p>
+            A shingle is another name for a token based n-gram.
+            </p>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Shingle.ShingleAnalyzerWrapper.#ctor(Lucene.Net.Util.Version)">
+            Wraps {@link StandardAnalyzer}. 
+        </member>
+        <member name="M:Lucene.Net.Analysis.Shingle.ShingleAnalyzerWrapper.#ctor(Lucene.Net.Util.Version,System.Int32)">
+            Wraps {@link StandardAnalyzer}. 
+        </member>
+        <member name="P:Lucene.Net.Analysis.Shingle.ShingleAnalyzerWrapper.MaxShingleSize">
+            <summary>
+            Gets or sets the max shingle (ngram) size
+            </summary>
+        </member>
+        <member name="P:Lucene.Net.Analysis.Shingle.ShingleAnalyzerWrapper.IsOutputUnigrams">
+            <summary>
+            Gets or sets whether or not to have the filter pass the original tokens 
+            (the "unigrams") to the output stream
+            </summary>
+        </member>
+        <!-- Badly formed XML comment ignored for member "T:Lucene.Net.Analysis.Shingle.ShingleFilter" -->
+        <member name="F:Lucene.Net.Analysis.Shingle.ShingleFilter.DEFAULT_MAX_SHINGLE_SIZE">
+            default maximum shingle size is 2.
+        </member>
+        <member name="F:Lucene.Net.Analysis.Shingle.ShingleFilter.TOKEN_SEPARATOR">
+            The string to use when joining adjacent tokens to form a shingle
+        </member>
+        <member name="F:Lucene.Net.Analysis.Shingle.ShingleFilter.FILLER_TOKEN">
+            filler token for when positionIncrement is more than 1
+        </member>
+        <member name="F:Lucene.Net.Analysis.Shingle.ShingleFilter.outputUnigrams">
+            By default, we output unigrams (individual tokens) as well as shingles
+            (token n-grams).
+        </member>
+        <member name="F:Lucene.Net.Analysis.Shingle.ShingleFilter.maxShingleSize">
+            maximum shingle size (number of tokens)
+        </member>
+        <member name="M:Lucene.Net.Analysis.Shingle.ShingleFilter.#ctor(Lucene.Net.Analysis.TokenStream,System.Int32)">
+             Constructs a ShingleFilter with the specified single size from the
+             {@link TokenStream} <code>input</code>
+            
+             @param input input stream
+             @param maxShingleSize maximum shingle size produced by the filter.
+        </member>
+        <member name="M:Lucene.Net.Analysis.Shingle.ShingleFilter.#ctor(Lucene.Net.Analysis.TokenStream)">
+             Construct a ShingleFilter with default shingle size.
+            
+             @param input input stream
+        </member>
+        <member name="M:Lucene.Net.Analysis.Shingle.ShingleFilter.#ctor(Lucene.Net.Analysis.TokenStream,System.String)">
+             Construct a ShingleFilter with the specified token type for shingle tokens.
+            
+             @param input input stream
+             @param tokenType token type for shingle tokens
+        </member>
+        <member name="M:Lucene.Net.Analysis.Shingle.ShingleFilter.setTokenType(System.String)">
+             Set the type of the shingle tokens produced by this filter.
+             (default: "shingle")
+            
+             @param tokenType token tokenType
+        </member>
+        <member name="M:Lucene.Net.Analysis.Shingle.ShingleFilter.SetOutputUnigrams(System.Boolean)">
+             Shall the output stream contain the input tokens (unigrams) as well as
+             shingles? (default: true.)
+            
+             @param outputUnigrams Whether or not the output stream shall contain
+             the input tokens (unigrams)
+        </member>
+        <member name="M:Lucene.Net.Analysis.Shingle.ShingleFilter.SetMaxShingleSize(System.Int32)">
+             Set the max shingle size (default: 2)
+            
+             @param maxShingleSize max size of output shingles
+        </member>
+        <member name="M:Lucene.Net.Analysis.Shingle.ShingleFilter.ClearShingles">
+            Clear the StringBuilders that are used for storing the output shingles.
+        </member>
+        <member name="M:Lucene.Net.Analysis.Shingle.ShingleFilter.GetNextToken">
+            Get the next token from the input stream and push it on the token buffer.
+            If we encounter a token with position increment > 1, we put filler tokens
+            on the token buffer.
+            <p/>
+            Returns null when the end of the input stream is reached.
+            @return the next token, or null if at end of input stream
+            @throws IOException if the input stream has a problem
+        </member>
+        <member name="M:Lucene.Net.Analysis.Shingle.ShingleFilter.FillShingleBuffer">
+             Fill the output buffer with new shingles.
+            
+             @throws IOException if there's a problem getting the next token
+        </member>
+        <member name="T:Lucene.Net.Analysis.Shingle.ShingleMatrixFilter">
+             <summary>
+             <p>A ShingleMatrixFilter constructs shingles (token n-grams) from a token stream.
+             In other words, it creates combinations of tokens as a single token.</p>
+            
+             <p>For example, the sentence "please divide this sentence into shingles"
+             might be tokenized into shingles "please divide", "divide this",
+             "this sentence", "sentence into", and "into shingles".</p>
+            
+             <p>Using a shingle filter at index and query time can in some instances
+             be used to replace phrase queries, especially them with 0 slop.</p>
+            
+             <p>Without a spacer character
+             it can be used to handle composition and decomposition of words
+             such as searching for "multi dimensional" instead of "multidimensional".
+             It is a rather common human problem at query time
+             in several languages, notably the northern Germanic branch.</p>
+            
+             <p>Shingles are amongst many things also known to solve problems
+             in spell checking, language detection and document clustering.</p>
+            
+             <p>This filter is backed by a three dimensional column oriented matrix
+             used to create permutations of the second dimension, the rows,
+             and leaves the third, the z-axis, for for multi token synonyms.</p>
+            
+             <p>In order to use this filter you need to define a way of positioning
+             the input stream tokens in the matrix. This is done using a
+             ShingleMatrixFilter.TokenSettingsCodec.
+             There are three simple implementations for demonstrational purposes,
+             see ShingleMatrixFilter.OneDimensionalNonWeightedTokenSettingsCodec,
+             ShingleMatrixFilter.TwoDimensionalNonWeightedSynonymTokenSettingsCodec
+             and ShingleMatrixFilter.SimpleThreeDimensionalTokenSettingsCodec.</p>
+            
+             <p>Consider this token matrix:</p>
+             <pre>
+              Token[column][row][z-axis]{
+                {{hello}, {greetings, and, salutations}},
+                {{world}, {earth}, {tellus}}
+              };
+             </pre>
+            
+             It would produce the following 2-3 gram sized shingles:
+            
+             <pre>
+             "hello_world"
+             "greetings_and"
+             "greetings_and_salutations"
+             "and_salutations"
+             "and_salutations_world"
+             "salutations_world"
+             "hello_earth"
+             "and_salutations_earth"
+             "salutations_earth"
+             "hello_tellus"
+             "and_salutations_tellus"
+             "salutations_tellus"
+              </pre>
+            
+             <p>This implementation can be rather heap demanding
+             if (maximum shingle size - minimum shingle size) is a great number and the stream contains many columns,
+             or if each column contains a great number of rows.</p>
+            
+             <p>The problem is that in order avoid producing duplicates
+             the filter needs to keep track of any shingle already produced and returned to the consumer.</p>
+            
+             <p>There is a bit of resource management to handle this
+             but it would of course be much better if the filter was written
+             so it never created the same shingle more than once in the first place.</p>
+            
+             <p>The filter also has basic support for calculating weights for the shingles
+             based on the weights of the tokens from the input stream, output shingle size, etc.
+             See CalculateShingleWeight.
+             <p/>
+             <b>NOTE:</b> This filter might not behave correctly if used with custom Attributes, i.e. Attributes other than
+             the ones located in org.apache.lucene.analysis.tokenattributes.</p> 
+             </summary>
+        </member>
+        <member name="F:Lucene.Net.Analysis.Shingle.ShingleMatrixFilter._shinglesSeen">
+            <summary>
+            A set containing shingles that has been the result of a call to Next(Token),
+            used to avoid producing the same shingle more than once.
+            
+            <p>
+            NOTE: The Java List implementation uses a different equality comparison scheme
+            than .NET's Generic List. So We have to use a custom IEqualityComparer implementation 
+            to get the same behaviour.
+            </p>
+            </summary>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Shingle.ShingleMatrixFilter.#ctor(Lucene.Net.Analysis.Shingle.Matrix.Matrix,System.Int32,System.Int32,System.Char,System.Boolean,Lucene.Net.Analysis.Shingle.Codec.TokenSettingsCodec)">
+            <summary>
+            Creates a shingle filter based on a user defined matrix.
+            
+            The filter /will/ delete columns from the input matrix! You will not be able to reset the filter if you used this constructor.
+            todo: don't touch the matrix! use a bool, set the input stream to null or something, and keep track of where in the matrix we are at.
+            
+            </summary>
+            <param name="matrix">the input based for creating shingles. Does not need to contain any information until ShingleMatrixFilter.IncrementToken() is called the first time.</param>
+            <param name="minimumShingleSize">minimum number of tokens in any shingle.</param>
+            <param name="maximumShingleSize">maximum number of tokens in any shingle.</param>
+            <param name="spacerCharacter">character to use between texts of the token parts in a shingle. null for none.</param>
+            <param name="ignoringSinglePrefixOrSuffixShingle">if true, shingles that only contains permutation of the first of the last column will not be produced as shingles. Useful when adding boundary marker tokens such as '^' and '$'.</param>
+            <param name="settingsCodec">codec used to read input token weight and matrix positioning.</param>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Shingle.ShingleMatrixFilter.#ctor(Lucene.Net.Analysis.TokenStream,System.Int32,System.Int32)">
+            <summary>
+            Creates a shingle filter using default settings.
+            
+            See ShingleMatrixFilter.DefaultSpacerCharacter, 
+            ShingleMatrixFilter.IgnoringSinglePrefixOrSuffixShingleByDefault, 
+            and ShingleMatrixFilter.DefaultSettingsCodec
+            </summary>
+            <param name="input">stream from which to construct the matrix</param>
+            <param name="minimumShingleSize">minimum number of tokens in any shingle.</param>
+            <param name="maximumShingleSize">maximum number of tokens in any shingle.</param>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Shingle.ShingleMatrixFilter.#ctor(Lucene.Net.Analysis.TokenStream,System.Int32,System.Int32,System.Nullable{System.Char})">
+            <summary>
+            Creates a shingle filter using default settings.
+            
+            See IgnoringSinglePrefixOrSuffixShingleByDefault, and DefaultSettingsCodec
+            </summary>
+            <param name="input">stream from which to construct the matrix</param>
+            <param name="minimumShingleSize">minimum number of tokens in any shingle.</param>
+            <param name="maximumShingleSize">maximum number of tokens in any shingle.</param>
+            <param name="spacerCharacter">character to use between texts of the token parts in a shingle. null for none. </param>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Shingle.ShingleMatrixFilter.#ctor(Lucene.Net.Analysis.TokenStream,System.Int32,System.Int32,System.Nullable{System.Char},System.Boolean)">
+            <summary>
+            Creates a shingle filter using the default <see cref="T:Lucene.Net.Analysis.Shingle.Codec.TokenSettingsCodec"/>.
+            
+            See DefaultSettingsCodec
+            </summary>
+            <param name="input">stream from which to construct the matrix</param>
+            <param name="minimumShingleSize">minimum number of tokens in any shingle.</param>
+            <param name="maximumShingleSize">maximum number of tokens in any shingle.</param>
+            <param name="spacerCharacter">character to use between texts of the token parts in a shingle. null for none.</param>
+            <param name="ignoringSinglePrefixOrSuffixShingle">if true, shingles that only contains permutation of the first of the last column will not be produced as shingles. Useful when adding boundary marker tokens such as '^' and '$'.</param>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Shingle.ShingleMatrixFilter.#ctor(Lucene.Net.Analysis.TokenStream,System.Int32,System.Int32,System.Nullable{System.Char},System.Boolean,Lucene.Net.Analysis.Shingle.Codec.TokenSettingsCodec)">
+            <summary>
+            Creates a shingle filter with ad hoc parameter settings.
+            </summary>
+            <param name="input">stream from which to construct the matrix</param>
+            <param name="minimumShingleSize">minimum number of tokens in any shingle.</param>
+            <param name="maximumShingleSize">maximum number of tokens in any shingle.</param>
+            <param name="spacerCharacter">character to use between texts of the token parts in a shingle. null for none.</param>
+            <param name="ignoringSinglePrefixOrSuffixShingle">if true, shingles that only contains permutation of the first of the last column will not be produced as shingles. Useful when adding boundary marker tokens such as '^' and '$'.</param>
+            <param name="settingsCodec">codec used to read input token weight and matrix positioning.</param>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Shingle.ShingleMatrixFilter.ProduceNextToken(Lucene.Net.Analysis.Token)">
+            <summary>
+            This method exists in order to avoid recursive calls to the method
+            as the complexity of a fairly small matrix then easily would require
+            a gigabyte sized stack per thread.
+            </summary>
+            <param name="reusableToken"></param>
+            <returns>null if exhausted, instance request_next_token if one more call is required for an answer, 
+            or instance parameter resuableToken.</returns>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Shingle.ShingleMatrixFilter.NextTokensPermutation">
+            <summary>
+            Get next permutation of row combinations,
+            creates list of all tokens in the row and
+            an index from each such token to what row they exist in.
+            finally resets the current (next) shingle size and offset. 
+            </summary>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Shingle.ShingleMatrixFilter.UpdateToken(Lucene.Net.Analysis.Token,System.Collections.Generic.List{Lucene.Net.Analysis.Token},System.Int32,System.Collections.Generic.List{Lucene.Net.Analysis.Shingle.Matrix.Row},System.Collections.Generic.List{Lucene.Net.Analysis.Token})">
+            <summary>
+            Final touch of a shingle token before it is passed on to the consumer from method <see cref="M:Lucene.Net.Analysis.Shingle.ShingleMatrixFilter.IncrementToken"/>.
+            
+            Calculates and sets type, flags, position increment, start/end offsets and weight.
+            </summary>
+            <param name="token">Shingle Token</param>
+            <param name="shingle">Tokens used to produce the shingle token.</param>
+            <param name="currentPermutationStartOffset">Start offset in parameter currentPermutationTokens</param>
+            <param name="currentPermutationRows">index to Matrix.Column.Row from the position of tokens in parameter currentPermutationTokens</param>
+            <param name="currentPermuationTokens">tokens of the current permutation of rows in the matrix. </param>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Shingle.ShingleMatrixFilter.CalculateShingleWeight(Lucene.Net.Analysis.Token,System.Collections.Generic.List{Lucene.Net.Analysis.Token},System.Int32,System.Collections.Generic.List{Lucene.Net.Analysis.Shingle.Matrix.Row},System.Collections.Generic.List{Lucene.Net.Analysis.Token})">
+            <summary>
+            Evaluates the new shingle token weight.
+            
+            for (shingle part token in shingle)
+            weight +=  shingle part token weight * (1 / sqrt(all shingle part token weights summed))
+            
+            This algorithm gives a slightly greater score for longer shingles
+            and is rather penalising to great shingle token part weights.
+            </summary>
+            <param name="shingleToken">token returned to consumer</param>
+            <param name="shingle">tokens the tokens used to produce the shingle token.</param>
+            <param name="currentPermutationStartOffset">start offset in parameter currentPermutationRows and currentPermutationTokens.</param>
+            <param name="currentPermutationRows">an index to what matrix row a token in parameter currentPermutationTokens exist.</param>
+            <param name="currentPermuationTokens">all tokens in the current row permutation of the matrix. A sub list (parameter offset, parameter shingle.size) equals parameter shingle.</param>
+            <returns>weight to be set for parameter shingleToken </returns>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Shingle.ShingleMatrixFilter.ReadColumn">
+            <summary>
+            Loads one column from the token stream.
+            
+            When the last token is read from the token stream it will column.setLast(true);
+            </summary>
+            <returns>true if it manage to read one more column from the input token stream</returns>
+        </member>
+        <member name="T:Lucene.Net.Analysis.Shingle.Codec.OneDimensionalNonWeightedTokenSettingsCodec">
+            <summary>
+            Using this codec makes a ShingleMatrixFilter act like ShingleFilter.
+            It produces the most simple sort of shingles, ignoring token position increments, etc.
+            
+            It adds each token as a new column.
+            </summary>
+        </member>
+        <member name="T:Lucene.Net.Analysis.Shingle.Codec.TokenSettingsCodec">
+            <summary>
+            Strategy used to code and decode meta data of the tokens from the input stream
+            regarding how to position the tokens in the matrix, set and retreive weight, etc.
+            </summary>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Shingle.Codec.TokenSettingsCodec.GetTokenPositioner(Lucene.Net.Analysis.Token)">
+            <summary>
+            Retrieves information on how a Token is to be inserted to a ShingleMatrixFilter.Matrix.
+            </summary>
+            <param name="token"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Shingle.Codec.TokenSettingsCodec.SetTokenPositioner(Lucene.Net.Analysis.Token,Lucene.Net.Analysis.Shingle.TokenPositioner)">
+            <summary>
+            Sets information on how a Token is to be inserted to a ShingleMatrixFilter.Matrix.
+            </summary>
+            <param name="token"></param>
+            <param name="tokenPositioner"></param>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Shingle.Codec.TokenSettingsCodec.GetWeight(Lucene.Net.Analysis.Token)">
+            <summary>
+            Have this method return 1f in order to 'disable' weights.
+            </summary>
+            <param name="token"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Shingle.Codec.TokenSettingsCodec.SetWeight(Lucene.Net.Analysis.Token,System.Single)">
+            <summary>
+            Have this method do nothing in order to 'disable' weights.
+            </summary>
+            <param name="token"></param>
+            <param name="weight"></param>
+        </member>
+        <member name="T:Lucene.Net.Analysis.Shingle.Codec.SimpleThreeDimensionalTokenSettingsCodec">
+            <summary>
+            A full featured codec not to be used for something serious.
+            
+            It takes complete control of
+            payload for weight
+            and the bit flags for positioning in the matrix.
+            
+            Mainly exist for demonstrational purposes.
+            </summary>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Shingle.Codec.SimpleThreeDimensionalTokenSettingsCodec.GetTokenPositioner(Lucene.Net.Analysis.Token)">
+            <summary>
+            
+            </summary>
+            <param name="token"></param>
+            <returns>the token flags int value as TokenPosition</returns>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Shingle.Codec.SimpleThreeDimensionalTokenSettingsCodec.SetTokenPositioner(Lucene.Net.Analysis.Token,Lucene.Net.Analysis.Shingle.TokenPositioner)">
+            <summary>
+            Sets the TokenPositioner as token flags int value.
+            </summary>
+            <param name="token"></param>
+            <param name="tokenPositioner"></param>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Shingle.Codec.SimpleThreeDimensionalTokenSettingsCodec.GetWeight(Lucene.Net.Analysis.Token)">
+            <summary>
+            Returns a 32 bit float from the payload, or 1f it null.
+            </summary>
+            <param name="token"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Shingle.Codec.SimpleThreeDimensionalTokenSettingsCodec.SetWeight(Lucene.Net.Analysis.Token,System.Single)">
+            <summary>
+            Stores a 32 bit float in the payload, or set it to null if 1f;
+            </summary>
+            <param name="token"></param>
+            <param name="weight"></param>
+        </member>
+        <member name="T:Lucene.Net.Analysis.Shingle.Codec.TwoDimensionalNonWeightedSynonymTokenSettingsCodec">
+            <summary>
+            A codec that creates a two dimensional matrix
+            by treating tokens from the input stream with 0 position increment
+            as new rows to the current column.
+            </summary>
+        </member>
+        <member name="T:Lucene.Net.Analysis.Sinks.DateRecognizerSinkFilter">
+             Attempts to parse the {@link org.apache.lucene.analysis.Token#termBuffer()} as a Date using a <see cref="T:System.IFormatProvider"/>.
+             If the value is a Date, it will add it to the sink.
+             <p/> 
+            
+            
+        </member>
+        <member name="M:Lucene.Net.Analysis.Sinks.DateRecognizerSinkFilter.#ctor">
+            Uses <see cref="!:System.Globalization.CultureInfo.CurrentCulture.DateTimeFormatInfo"/> as the <see cref="T:System.IFormatProvider"/> object.
+        </member>
+        <member name="T:Lucene.Net.Analysis.Th.ThaiAnalyzer">
+             {@link Analyzer} for Thai language. It uses {@link java.text.BreakIterator} to break words.
+             @version 0.2
+            
+             <p><b>NOTE</b>: This class uses the same {@link Version}
+             dependent settings as {@link StandardAnalyzer}.</p>
+        </member>
+        <!-- Badly formed XML comment ignored for member "T:Lucene.Net.Analysis.Th.ThaiWordFilter" -->
+    </members>
+</doc>

@@ -1,0 +1,83 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Lucene.Net.Store.Azure</name>
+    </assembly>
+    <members>
+        <member name="M:Lucene.Net.Store.Azure.AzureDirectory.#ctor(Microsoft.WindowsAzure.Storage.CloudStorageAccount,System.String)">
+            <summary>
+            Create AzureDirectory
+            </summary>
+            <param name="storageAccount">staorage account to use</param>
+            <param name="catalog">name of catalog (folder in blob storage)</param>
+            <remarks>Default local cache is to use file system in user/appdata/AzureDirectory/Catalog</remarks>
+        </member>
+        <member name="M:Lucene.Net.Store.Azure.AzureDirectory.#ctor(Microsoft.WindowsAzure.Storage.CloudStorageAccount,System.String,Lucene.Net.Store.Directory)">
+            <summary>
+            Create an AzureDirectory
+            </summary>
+            <param name="storageAccount">storage account to use</param>
+            <param name="catalog">name of catalog (folder in blob storage)</param>
+            <param name="cacheDirectory">local Directory object to use for local cache</param>
+        </member>
+        <member name="M:Lucene.Net.Store.Azure.AzureDirectory.ListAll">
+            <summary>Returns an array of strings, one for each file in the directory. </summary>
+        </member>
+        <member name="M:Lucene.Net.Store.Azure.AzureDirectory.FileExists(System.String)">
+            <summary>Returns true if a file with the given name exists. </summary>
+        </member>
+        <member name="M:Lucene.Net.Store.Azure.AzureDirectory.FileModified(System.String)">
+            <summary>Returns the time the named file was last modified. </summary>
+        </member>
+        <member name="M:Lucene.Net.Store.Azure.AzureDirectory.TouchFile(System.String)">
+            <summary>Set the modified time of an existing file to now. </summary>
+        </member>
+        <member name="M:Lucene.Net.Store.Azure.AzureDirectory.DeleteFile(System.String)">
+            <summary>Removes an existing file in the directory. </summary>
+        </member>
+        <member name="M:Lucene.Net.Store.Azure.AzureDirectory.FileLength(System.String)">
+            <summary>Returns the length of a file in the directory. </summary>
+        </member>
+        <member name="M:Lucene.Net.Store.Azure.AzureDirectory.CreateOutput(System.String)">
+            <summary>Creates a new, empty file in the directory with the given name.
+            Returns a stream writing this file. 
+            </summary>
+        </member>
+        <member name="M:Lucene.Net.Store.Azure.AzureDirectory.OpenInput(System.String)">
+            <summary>Returns a stream reading an existing file. </summary>
+        </member>
+        <member name="M:Lucene.Net.Store.Azure.AzureDirectory.MakeLock(System.String)">
+            <summary>Construct a {@link Lock}.</summary>
+            <param name="name">the name of the lock file
+            </param>
+        </member>
+        <member name="M:Lucene.Net.Store.Azure.AzureDirectory.Dispose(System.Boolean)">
+            <summary>Closes the store. </summary>
+        </member>
+        <member name="T:Lucene.Net.Store.Azure.AzureIndexInput">
+            <summary>
+            Implements IndexInput semantics for a read only blob
+            </summary>
+        </member>
+        <member name="T:Lucene.Net.Store.Azure.AzureIndexOutput">
+            <summary>
+            Implements IndexOutput semantics for a write/append only file
+            </summary>
+        </member>
+        <member name="T:Lucene.Net.Store.Azure.AzureLock">
+            <summary>
+            Implements lock semantics on AzureDirectory via a blob lease
+            </summary>
+        </member>
+        <member name="T:Lucene.Net.Store.Azure.StreamInput">
+            <summary>
+            Stream wrapper around IndexInput
+            </summary>
+        </member>
+        <member name="T:Lucene.Net.Store.Azure.StreamOutput">
+            <summary>
+            Stream wrapper around an IndexOutput
+            </summary>
+        </member>
+    </members>
+</doc>

@@ -1,0 +1,102 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{97675C0D-3F9E-4E05-9181-EDFA88614B87}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Com.Lybecker.LuceneLibrary</RootNamespace>
+    <AssemblyName>Com.Lybecker.LuceneLibrary</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Release\Com.Lybecker.LuceneLibrary.XML</DocumentationFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Lucene.Net">
+      <HintPath>..\3rdPartyBinaries\Lucene.Net.dll</HintPath>
+    </Reference>
+    <Reference Include="Lucene.Net.Contrib.Analyzers">
+      <HintPath>..\3rdPartyBinaries\Lucene.Net.Contrib.Analyzers.dll</HintPath>
+    </Reference>
+    <Reference Include="Lucene.Net.Contrib.SimpleFacetedSearch">
+      <HintPath>..\3rdPartyBinaries\Lucene.Net.Contrib.SimpleFacetedSearch.dll</HintPath>
+    </Reference>
+    <Reference Include="Lucene.Net.Contrib.Spatial">
+      <HintPath>..\3rdPartyBinaries\Spartial\Lucene.Net.Contrib.Spatial.dll</HintPath>
+    </Reference>
+    <Reference Include="Lucene.Net.Test">
+      <HintPath>..\3rdPartyBinaries\Lucene.Net.Test.dll</HintPath>
+    </Reference>
+    <Reference Include="nunit.framework, Version=2.5.2.9222, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\3rdPartyBinaries\nunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="Spatial4n.Core">
+      <HintPath>..\3rdPartyBinaries\Spartial\Spatial4n.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ScandinavianNormalizationFilter.cs" />
+    <Compile Include="ScandinavianFoldingFilter.cs" />
+    <Compile Include="MultiCollector.cs" />
+    <Compile Include="GroupTopDocsCollector.cs" />
+    <Compile Include="LowerCaseKeywordAnalyzer.cs" />
+    <Compile Include="MyIntComparator.cs" />
+    <Compile Include="MyStringComparatorLocale.cs" />
+    <Compile Include="OpressFieldComparator.cs" />
+    <Compile Include="ExtendedMultiFieldQueryParser.cs" />
+    <Compile Include="QueryParsers\PrefixExpandMultiFieldQueryParser.cs" />
+    <Compile Include="ReverseAnalyzer.cs" />
+    <Compile Include="ReversedWildcardFilter.cs" />
+    <Compile Include="LuceneTerm.cs" />
+    <Compile Include="SearchManager.cs" />
+    <Compile Include="Spartial\PointVectorDistanceFieldComparator.cs" />
+    <Compile Include="StemmerUtil.cs" />
+    <Compile Include="UnitTest\ScandinavianNormalizationFilterTest.cs" />
+    <Compile Include="UnitTest\ScandinavianFoldingFilterTest.cs" />
+    <Compile Include="UnitTest\GroupTopDocsCollectorTest.cs" />
+    <Compile Include="UnitTest\PointVectorDistanceFieldComparatorTest.cs" />
+    <Compile Include="UnitTest\OpressFieldComparatorTest.cs" />
+    <Compile Include="EdgeNGramAnalyzer.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UnitTest\MultiSearcherTest.cs" />
+    <Compile Include="UnitTest\SearchManager_ReleaseManagement_UnitTests.cs.cs" />
+    <Compile Include="UnitTest\SearchManager_UnitTests.cs" />
+    <Compile Include="Util.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
